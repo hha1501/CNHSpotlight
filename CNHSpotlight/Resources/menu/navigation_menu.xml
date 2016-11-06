@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu 
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <group android:checkableBehavior="single">
+    <item
+      android:icon="@drawable/ic_subtitles_white_24dp"
+      android:id="@+id/navigation_menu_item_news"
+      android:title="@string/nav_menu_item_news" />
+    <item
+      android:icon="@drawable/ic_book_white_24dp"
+      android:id="@+id/navigation_menu_item_education"
+      android:title="@string/nav_menu_item_education"/>
+    <item
+      android:icon="@drawable/ic_public_white_24dp"
+      android:id="@+id/navigation_menu_item_education_abroadeducation"
+      android:title="@string/nav_menu_item_education_abroadeducation"/>
+    <item
+      android:icon="@drawable/ic_landscape_white_24dp"
+      android:id="@+id/navigation_menu_item_education_contests"
+      android:title="@string/nav_menu_item_education_contests"/>
+    <item
+      android:icon="@drawable/ic_group_white_24dp"
+      android:id="@+id/navigation_menu_item_club"
+      android:title="@string/nav_menu_item_club"/>
+    <item
+      android:icon="@drawable/ic_local_activity_white_24dp"
+      android:id="@+id/navigation_menu_item_entertainment"
+      android:title="@string/nav_menu_item_entertainment"/>
+    <item
+      android:icon="@drawable/ic_person_white_24dp"
+      android:id="@+id/navigation_menu_item_cnhicon"
+      android:title="@string/nav_menu_item_cnhicon"/>
+    <item
+      android:icon="@drawable/ic_insert_emoticon_white_24dp"
+      android:id="@+id/navigation_menu_item_cnhinme"
+      android:title="@string/nav_menu_item_cnhinme"/>
+    <item
+      android:icon="@drawable/ic_domain_white_24dp"
+      android:id="@+id/navigation_menu_item_outsideclass"
+      android:title="@string/nav_menu_item_outsideclass"/>
+    <item
+      android:icon="@drawable/ic_looks_white_24dp"
+      android:id="@+id/navigation_menu_item_trivial"
+      android:title="@string/nav_menu_item_trivial"/>
+  </group>
+</menu>

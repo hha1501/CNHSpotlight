@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="nav_menu_item_news">"News"</string>
+    <string name="nav_menu_item_education">"Education"</string>
+    <string name="nav_menu_item_education_abroadeducation">"Abroad education"</string>
+    <string name="nav_menu_item_education_contests">"Contests"</string>
+    <string name="nav_menu_item_club">"Club"</string>
+    <string name="nav_menu_item_entertainment">"Entertainment"</string>
+    <string name="nav_menu_item_cnhicon">"CNH's Icon"</string>
+    <string name="nav_menu_item_cnhinme">"CNH in me"</string>
+    <string name="nav_menu_item_outsideclass">"Outside class"</string>
+    <string name="nav_menu_item_trivial">"Trivial"</string>
+</resources>
