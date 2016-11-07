@@ -66,9 +66,10 @@ namespace CNHSpotlight
         {
             textviewTitle.TextFormatted = HtmlReader.GetReadableFromHtml(currentPost.Title.Rendered);
 
+            string userName = await WordPressExtension.GetUserName(currentPost.Author);
 
             textviewExtraInfo.TextFormatted = HtmlReader.GetReadableFromHtml(
-                string.Format("By {0}      {1}", WordPressExtension.GetUserName(currentPost.Author), currentPost.Date));
+                string.Format("By {0}      {1}", userName, currentPost.Date));
 
             textviewContent.TextFormatted = await HtmlReader.GetReadableFromHtml(currentPost.Content.Rendered, currentPost.Id);
         }

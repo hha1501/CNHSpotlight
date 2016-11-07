@@ -54,7 +54,7 @@ namespace CNHSpotlight
 
             return swipeRefreshLayout;
         }
-
+        
         public override  void OnResume()
         {
             base.OnResume();
@@ -98,9 +98,15 @@ namespace CNHSpotlight
                     listviewNews.Adapter = newsAdapter;
                     break;
 
+                case TaskResult.NoData:
+                    Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
+                    break;
+
                 default:
                     break;
             }
+
+            currentCategory = category;
         }
 
         public async Task FetchLatestNews(CNHCategory category)

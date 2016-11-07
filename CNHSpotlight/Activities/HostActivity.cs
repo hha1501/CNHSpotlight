@@ -14,7 +14,7 @@ using CNHSpotlight.WordPress;
 
 namespace CNHSpotlight
 {
-    [Activity(Label = "CNHSpotlight", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "CNHSpotlight", MainLauncher = true, Icon = "@drawable/CNHIcon")]
     public class HostActivity : AppCompatActivity
     {
 

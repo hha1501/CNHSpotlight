@@ -18,6 +18,7 @@ using HtmlAgilityPack;
 using WordPressPCL.Models;
 
 using CNHSpotlight.WordPress;
+using CNHSpotlight.Scripts.ConnectionInfo;
 
 namespace CNHSpotlight.ImageResource
 {
@@ -33,6 +34,11 @@ namespace CNHSpotlight.ImageResource
         {
             Bitmap image = null;
 
+            // no internet connection, return immediately
+            if (!ConnectionInfo.InternetConnected())
+            {
+                return image;
+            }
             try
             {
                 using (HttpClient httpClient = new HttpClient())
@@ -81,7 +87,11 @@ namespace CNHSpotlight.ImageResource
             // get image online
             image = await GetImageOnline(imageUri);
             // save image for future uses
-            DataManager.SavePostImage(image, postId, imageIndex);
+
+            if (image != null)
+            {
+                DataManager.SavePostImage(image, postId, imageIndex); 
+            }
 
             // construct new image span
             imageSpan = new ImageSpan(image);
