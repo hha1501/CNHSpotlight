@@ -1972,52 +1972,58 @@ namespace CNHSpotlight
 			public const int CNHIcon = 2130837587;
 			
 			// aapt resource value: 0x7f020054
-			public const int design_fab_background = 2130837588;
+			public const int CNHIcon_ = 2130837588;
 			
 			// aapt resource value: 0x7f020055
-			public const int design_ic_visibility = 2130837589;
+			public const int design_fab_background = 2130837589;
 			
 			// aapt resource value: 0x7f020056
-			public const int design_snackbar_background = 2130837590;
+			public const int design_ic_visibility = 2130837590;
 			
 			// aapt resource value: 0x7f020057
-			public const int ic_book_white_24dp = 2130837591;
+			public const int design_snackbar_background = 2130837591;
 			
 			// aapt resource value: 0x7f020058
-			public const int ic_domain_white_24dp = 2130837592;
+			public const int ic_book_white_24dp = 2130837592;
 			
 			// aapt resource value: 0x7f020059
-			public const int ic_group_white_24dp = 2130837593;
+			public const int ic_domain_white_24dp = 2130837593;
 			
 			// aapt resource value: 0x7f02005a
-			public const int ic_insert_emoticon_white_24dp = 2130837594;
+			public const int ic_group_white_24dp = 2130837594;
 			
 			// aapt resource value: 0x7f02005b
-			public const int ic_landscape_white_24dp = 2130837595;
+			public const int ic_insert_emoticon_white_24dp = 2130837595;
 			
 			// aapt resource value: 0x7f02005c
-			public const int ic_local_activity_white_24dp = 2130837596;
+			public const int ic_landscape_white_24dp = 2130837596;
 			
 			// aapt resource value: 0x7f02005d
-			public const int ic_looks_white_24dp = 2130837597;
+			public const int ic_local_activity_white_24dp = 2130837597;
 			
 			// aapt resource value: 0x7f02005e
-			public const int ic_person_white_24dp = 2130837598;
+			public const int ic_looks_white_24dp = 2130837598;
 			
 			// aapt resource value: 0x7f02005f
-			public const int ic_public_white_24dp = 2130837599;
+			public const int ic_menu_white_24dp = 2130837599;
 			
 			// aapt resource value: 0x7f020060
-			public const int ic_subtitles_white_24dp = 2130837600;
+			public const int ic_person_white_24dp = 2130837600;
 			
 			// aapt resource value: 0x7f020061
-			public const int Icon = 2130837601;
+			public const int ic_public_white_24dp = 2130837601;
 			
 			// aapt resource value: 0x7f020062
-			public const int navigation_empty_icon = 2130837602;
+			public const int ic_subtitles_white_24dp = 2130837602;
 			
 			// aapt resource value: 0x7f020063
-			public const int notification_template_icon_bg = 2130837603;
+			public const int Icon = 2130837603;
+			
+			// aapt resource value: 0x7f020064
+			public const int navigation_empty_icon = 2130837604;
+			
+			// aapt resource value: 0x7f020065
+			public const int notification_template_icon_bg = 2130837605;
 			
 			static Drawable()
 			{
@@ -2263,35 +2269,35 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f060071
 			public const int navigation_header_container = 2131099761;
 			
-			// aapt resource value: 0x7f060096
-			public const int navigation_menu_item_club = 2131099798;
-			
-			// aapt resource value: 0x7f060098
-			public const int navigation_menu_item_cnhicon = 2131099800;
-			
-			// aapt resource value: 0x7f060099
-			public const int navigation_menu_item_cnhinme = 2131099801;
-			
-			// aapt resource value: 0x7f060093
-			public const int navigation_menu_item_education = 2131099795;
-			
 			// aapt resource value: 0x7f060094
-			public const int navigation_menu_item_education_abroadeducation = 2131099796;
+			public const int navigation_menu_item_club = 2131099796;
 			
-			// aapt resource value: 0x7f060095
-			public const int navigation_menu_item_education_contests = 2131099797;
+			// aapt resource value: 0x7f060096
+			public const int navigation_menu_item_cnhicon = 2131099798;
 			
 			// aapt resource value: 0x7f060097
-			public const int navigation_menu_item_entertainment = 2131099799;
+			public const int navigation_menu_item_cnhinme = 2131099799;
+			
+			// aapt resource value: 0x7f060091
+			public const int navigation_menu_item_education = 2131099793;
 			
 			// aapt resource value: 0x7f060092
-			public const int navigation_menu_item_news = 2131099794;
+			public const int navigation_menu_item_education_abroadeducation = 2131099794;
 			
-			// aapt resource value: 0x7f06009a
-			public const int navigation_menu_item_outsideclass = 2131099802;
+			// aapt resource value: 0x7f060093
+			public const int navigation_menu_item_education_contests = 2131099795;
 			
-			// aapt resource value: 0x7f06009b
-			public const int navigation_menu_item_trivial = 2131099803;
+			// aapt resource value: 0x7f060095
+			public const int navigation_menu_item_entertainment = 2131099797;
+			
+			// aapt resource value: 0x7f060090
+			public const int navigation_menu_item_news = 2131099792;
+			
+			// aapt resource value: 0x7f060098
+			public const int navigation_menu_item_outsideclass = 2131099800;
+			
+			// aapt resource value: 0x7f060099
+			public const int navigation_menu_item_trivial = 2131099801;
 			
 			// aapt resource value: 0x7f060022
 			public const int never = 2131099682;
@@ -2338,17 +2344,11 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f06008d
 			public const int readnewsActivity_root = 2131099789;
 			
-			// aapt resource value: 0x7f060091
-			public const int readnewsActivity_text_content = 2131099793;
-			
-			// aapt resource value: 0x7f060090
-			public const int readnewsActivity_text_extrainfo = 2131099792;
-			
-			// aapt resource value: 0x7f06008f
-			public const int readnewsActivity_text_title = 2131099791;
-			
 			// aapt resource value: 0x7f06008e
 			public const int readnewsActivity_toolbar = 2131099790;
+			
+			// aapt resource value: 0x7f06008f
+			public const int readnewsActivity_webview_content = 2131099791;
 			
 			// aapt resource value: 0x7f060031
 			public const int right = 2131099697;
@@ -2836,6 +2836,12 @@ namespace CNHSpotlight
 			
 			// aapt resource value: 0x7f070012
 			public const int abc_toolbar_collapse_description = 2131165202;
+			
+			// aapt resource value: 0x7f07002f
+			public const int actionbardrawertoggle_description_close = 2131165231;
+			
+			// aapt resource value: 0x7f07002e
+			public const int actionbardrawertoggle_description_open = 2131165230;
 			
 			// aapt resource value: 0x7f070021
 			public const int appbar_scrolling_view_behavior = 2131165217;

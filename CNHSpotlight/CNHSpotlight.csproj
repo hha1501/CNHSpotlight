@@ -39,6 +39,7 @@
     <EnableLLVM>False</EnableLLVM>
     <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
     <EnableProguard>False</EnableProguard>
+    <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -129,7 +130,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scripts\ConnectionInfo\ConnectionInfo.cs" />
     <Compile Include="Scripts\DataManager\DataManager.cs" />
-    <Compile Include="Scripts\Html Reader\HtmlReader.cs" />
+    <Compile Include="Scripts\Html Reader\HtmlFormatter.cs" />
+    <Compile Include="Scripts\Image Extension\ImageExtension.cs" />
     <Compile Include="Scripts\Image getter\ImageGetter.cs" />
     <Compile Include="Scripts\News Listview Adapter\NewsListViewAdapter.cs" />
     <Compile Include="Scripts\Wordpress Models Wrapper\ModelWrapper.cs" />
@@ -207,6 +209,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\CNHIcon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\CNHIcon_.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_menu_white_24dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets')" />

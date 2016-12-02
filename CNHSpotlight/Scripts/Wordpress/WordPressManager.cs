@@ -196,9 +196,6 @@ namespace CNHSpotlight.WordPress
 
                     if (tempMedia != null)
                     {
-                        // save Media for future uses
-                        DataManager.SaveMedia(tempMedia);
-
                         return new ModelWrapper<Media>(tempMedia, TaskResult.Success);
                     }
                     else

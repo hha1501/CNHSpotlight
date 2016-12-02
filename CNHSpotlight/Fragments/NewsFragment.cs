@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,16 @@ namespace CNHSpotlight
         ListView listviewNews;
 
         // current category
-        CNHCategory currentCategory = CNHCategory.News;
+        CNHCategory currentCategory { get; set; }
+
+        // bool for refreshing indication
+        bool IsRefreshing;
+
+        // constructor
+        public NewsFragment(CNHCategory category)
+        {
+            currentCategory = category;
+        }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -52,69 +62,90 @@ namespace CNHSpotlight
             listviewNews = swipeRefreshLayout.FindViewById<ListView>(Resource.Id.newsFragment_listview_newslist);
             listviewNews.ItemClick += NewsClick;
 
+
             return swipeRefreshLayout;
         }
-        
-        public override  void OnResume()
+
+        public override void OnResume()
         {
             base.OnResume();
 
-            var posts = DataManager.GetPostsOffline(currentCategory);
-
-            switch (posts.Result)
+            if (listviewNews.Count <= 0)
             {
-                case TaskResult.Success:
-                    NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data);
-
-                    listviewNews.Adapter = newsAdapter;
-                    break;
-
-                default:
-                    break;
+                Task.Run(() => FetchNews(currentCategory));
             }
         }
 
-
         private void NewsClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            NewsListViewAdapter adapter = (NewsListViewAdapter)listviewNews.Adapter;
-            Post post = adapter[e.Position];
+            if (!IsRefreshing)
+            {
+                NewsListViewAdapter adapter = (NewsListViewAdapter)listviewNews.Adapter;
+                Post post = adapter[e.Position];
 
-            // start readnewsActivity
-            Intent intent = new Intent(Activity, typeof(ReadNewsActivity));
-            intent.PutExtra("news_post_extra", JsonConvert.SerializeObject(post));
-            StartActivity(intent);
+                // start readnewsFragment
+                HostActivity hostActivity = (HostActivity)Activity;
+
+                hostActivity.ReadNews(post); 
+            }
         }
 
         public void FetchNews(CNHCategory category)
         {
-            var posts = DataManager.GetPostsOffline(currentCategory);
-
-            switch (posts.Result)
+            // clear list view if it is another category
+            if (category != currentCategory)
             {
-                case TaskResult.Success:
-                    NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data);
-
-                    listviewNews.Adapter = newsAdapter;
-                    break;
-
-                case TaskResult.NoData:
-                    Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
-                    break;
-
-                default:
-                    break;
+                Activity.RunOnUiThread(() =>
+                {
+                    listviewNews.Adapter = null;
+                });
             }
 
+            swipeRefreshLayout.Refreshing = true;
+            IsRefreshing = true;
+
+            var posts = DataManager.GetPostsOffline(category);
+           
+
+            Activity.RunOnUiThread(async () =>
+            {
+
+                switch (posts.Result)
+                {
+                    case TaskResult.Success:
+                        var thumbnailImages = await ImageResource.ImageGetter.GetAllMediaImages(posts.Data);
+                        NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data, thumbnailImages);
+
+                        listviewNews.Adapter = newsAdapter;
+                        break;
+
+                    case TaskResult.NoData:
+                        Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
+                        break;
+
+                    default:
+                        break;
+            }
+
+            });
+
             currentCategory = category;
+            swipeRefreshLayout.Refreshing = false;
+            IsRefreshing = false;
+
         }
 
         public async Task FetchLatestNews(CNHCategory category)
         {
-            if (!swipeRefreshLayout.Refreshing)
+
+            // clear list view if it is another category
+            if (category != currentCategory)
             {
-                swipeRefreshLayout.Refreshing = true; 
+                listviewNews.Adapter = null;
             }
+
+            swipeRefreshLayout.Refreshing = true;
+            IsRefreshing = true;
 
             var posts = await WordPressManager.GetPostsOnline(category, 10);
 
@@ -135,8 +166,9 @@ namespace CNHSpotlight
                     break;
 
                 case TaskResult.Success:
-                    NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data);
-
+                    var thumbnailImages = await ImageResource.ImageGetter.GetAllMediaImages(posts.Data);
+                    NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data, thumbnailImages);
+                    
                     listviewNews.Adapter = newsAdapter;
                     break;
 
@@ -150,6 +182,7 @@ namespace CNHSpotlight
 
             // stop refreshing animation
             swipeRefreshLayout.Refreshing = false;
+            IsRefreshing = false;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace CNHSpotlight
         List<Bitmap> thumbnailImagesList;
 
         // constructor
-        public NewsListViewAdapter(Activity hostActivity, List<Post> postsList)
+        public NewsListViewAdapter(Activity hostActivity, List<Post> postsList, List<Bitmap> thumbnailImages)
         {
             this.hostActivity = hostActivity;
             PostsList = postsList;
@@ -42,11 +42,7 @@ namespace CNHSpotlight
             thumbnailImagesList = new List<Bitmap>();
 
             // cached all thumbnail images
-            ImageGetter.GetAllMediaImages(postsList).ContinueWith((task) =>
-            {
-                thumbnailImagesList = task.Result;
-                NotifyDataSetChanged();
-            });
+            thumbnailImagesList = thumbnailImages;
         }
 
 
@@ -85,8 +81,8 @@ namespace CNHSpotlight
             TextView title = itemView.FindViewById<TextView>(Resource.Id.newslistviewitem_text_title);
             ImageView thumbnailImage = itemView.FindViewById<ImageView>(Resource.Id.newslistviewitem_imageview_thumbnailimage);
 
-
-            title.TextFormatted = HtmlReader.GetReadableFromHtml(currentPost.Title.Rendered);
+            #pragma warning disable CS0618
+            title.TextFormatted = Html.FromHtml(currentPost.Title.Rendered);
 
             // set image to thumbnailImage
             if (position < thumbnailImagesList.Count)

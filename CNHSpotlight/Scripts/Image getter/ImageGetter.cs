@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Http;
+using System.Security.Cryptography;
 
 using Android.App;
 using Android.Content;
@@ -13,6 +14,7 @@ using Android.Views;
 using Android.Widget;
 using Android.Text.Style;
 using Android.Graphics;
+using Android.Graphics.Drawables;
 
 using HtmlAgilityPack;
 using WordPressPCL.Models;
@@ -45,7 +47,7 @@ namespace CNHSpotlight.ImageResource
                 {
                     byte[] imageData = await httpClient.GetByteArrayAsync(source);
 
-                    image = BitmapFactory.DecodeByteArray(imageData, 0, imageData.Length);
+                    image = ImageExtension.DecodeResource(imageData);
                 }
             }
             catch (Exception)
@@ -62,42 +64,11 @@ namespace CNHSpotlight.ImageResource
         /// Could return null if task fails
         /// </para>
         /// </summary>
-        /// <param name="htmlContainsImages"></param>
+        /// <param name="htmlContainsImages">Html string in raw format</param>
+        /// <param name="postId">For offline lookup</param>
+        /// <param name="imageWidth">To scale images to fit prefered width</param>
         /// <returns></returns>
-        public static async Task<ImageSpan> GetPostImage(string htmlContainsImages, int postId, int imageIndex)
-        {
-            ImageSpan imageSpan = null;
-            Bitmap image = null;
-            // this is for offline lookup
-            image = DataManager.GetPostImageOffline(postId, imageIndex);
-            if (image != null)
-            {
-                return new ImageSpan(image);
-            }
-
-            // this is for internet implementation
-            HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(htmlContainsImages);
-
-            string imageUriString = htmlDoc.DocumentNode.Descendants("img")
-                .ElementAt(imageIndex).GetAttributeValue("src", null);
-
-            Uri imageUri = new Uri(imageUriString);
-
-            // get image online
-            image = await GetImageOnline(imageUri);
-            // save image for future uses
-
-            if (image != null)
-            {
-                DataManager.SavePostImage(image, postId, imageIndex); 
-            }
-
-            // construct new image span
-            imageSpan = new ImageSpan(image);
-
-            return imageSpan;
-        }
+       
 
         /// <summary>
         /// Implemented both online and offline
@@ -117,9 +88,6 @@ namespace CNHSpotlight.ImageResource
 
             // this is for internet implementation
             image = await GetMediaImageOnline(mediaId);
-
-            // save image for further uses
-            DataManager.SaveMediaImage(image, mediaId);
 
             return image;
         }
@@ -157,6 +125,11 @@ namespace CNHSpotlight.ImageResource
                 string mediaUriString = media.Data.SourceUrl;
 
                 bitmap = await GetImageOnline(new Uri(mediaUriString));
+
+                if (bitmap != null)
+                {
+                    DataManager.SaveMediaImage(bitmap, mediaId);
+                }
             }
 
             return bitmap;

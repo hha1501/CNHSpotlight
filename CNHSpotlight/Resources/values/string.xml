@@ -10,4 +10,7 @@
     <string name="nav_menu_item_cnhinme">"CNH in me"</string>
     <string name="nav_menu_item_outsideclass">"Outside class"</string>
     <string name="nav_menu_item_trivial">"Trivial"</string>
+
+    <string name="actionbardrawertoggle_description_open">"Open"</string>
+    <string name="actionbardrawertoggle_description_close">"Close"</string>
 </resources>

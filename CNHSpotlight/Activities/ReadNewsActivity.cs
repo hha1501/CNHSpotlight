@@ -1,43 +1,35 @@
-using System;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.Text;
-using Android.Text.Style;
-
+using Android.App;
+using Android.Content.PM;
 using Android.Support.V7.App;
+using Android.Webkit;
 
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 using WordPressPCL.Models;
 using Newtonsoft.Json;
-using CNHSpotlight.WordPress;
 
+using CNHSpotlight.HtmlParser;
 
 namespace CNHSpotlight
 {
-    [Activity(Label = "ReadNewsActivity", ParentActivity = typeof(HostActivity))]
+    [Activity(ParentActivity = typeof(HostActivity), ScreenOrientation = ScreenOrientation.Portrait)]
     public class ReadNewsActivity : AppCompatActivity
     {
         // UIs
         Toolbar toolbar;
 
-        TextView textviewTitle;
+        WebView webviewContent; 
 
-        TextView textviewExtraInfo;
+        // current post
+        Post currentPost;
 
-        TextView textviewContent;
 
-    
-        protected override async void OnCreate(Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
@@ -46,33 +38,36 @@ namespace CNHSpotlight
             // toolbar
             toolbar = FindViewById<Toolbar>(Resource.Id.readnewsActivity_toolbar);
             SetSupportActionBar(toolbar);
-            SupportActionBar.Title = "News";
+            SupportActionBar.Title = "CNH Spotlight";
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
 
-            // title
-            textviewTitle = FindViewById<TextView>(Resource.Id.readnewsActivity_text_title);
-
-            // extra info
-            textviewExtraInfo = FindViewById<TextView>(Resource.Id.readnewsActivity_text_extrainfo);
 
             // content
-            textviewContent = FindViewById<TextView>(Resource.Id.readnewsActivity_text_content);
+            webviewContent = FindViewById<WebView>(Resource.Id.readnewsActivity_webview_content);
 
-            Post post = JsonConvert.DeserializeObject<Post>(Intent.GetStringExtra("news_post_extra"));
-            await LoadNews(post);
+            // get current post
+            string postJson = Intent.GetStringExtra("post_Json_extra");
+            currentPost = JsonConvert.DeserializeObject<Post>(postJson);
+
         }
+
+        protected override async void OnResume()
+        {
+            base.OnResume();
+
+            await LoadNews(currentPost);
+        }
+
+
+
 
         private async Task LoadNews(Post currentPost)
         {
-            textviewTitle.TextFormatted = HtmlReader.GetReadableFromHtml(currentPost.Title.Rendered);
+            string html = await HtmlFormatter.FormatPost(currentPost);
 
-            string userName = await WordPressExtension.GetUserName(currentPost.Author);
-
-            textviewExtraInfo.TextFormatted = HtmlReader.GetReadableFromHtml(
-                string.Format("By {0}      {1}", userName, currentPost.Date));
-
-            textviewContent.TextFormatted = await HtmlReader.GetReadableFromHtml(currentPost.Content.Rendered, currentPost.Id);
+            webviewContent.LoadDataWithBaseURL(null, html, "text/html", "utf-8", null);
         }
+
 
 
     }
