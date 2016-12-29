@@ -16,10 +16,9 @@ using Android.Widget;
 using Android.Graphics;
 
 using Newtonsoft.Json;
-using WordPressPCL.Models;
 
 using CNHSpotlight.WordPress;
-using CNHSpotlight.ImageResource;
+using CNHSpotlight.WordPress.Models;
 
 namespace CNHSpotlight
 {
@@ -63,7 +62,32 @@ namespace CNHSpotlight
         #endregion
 
         #region Posts
-        public static void SavePosts(List<Post> data, CNHCategory category)
+        public static void SavePosts(List<Post> data, CNHCategory category, int index)
+        {
+            List<Post> finalPostList = new List<Post>();
+
+            var posts = GetPostsOffline(category);
+
+            // try to get saved postList if it exists
+            if (posts.Result == TaskResult.Success)
+            {
+                finalPostList = posts.Data;
+            }
+
+            finalPostList.ReplaceItemRange(index, data);
+
+            using (StreamWriter streamWriter = new StreamWriter(GetPostFilePath(category)))
+            {
+                streamWriter.Write(JsonConvert.SerializeObject(finalPostList));
+            }
+        }
+
+        /// <summary>
+        /// Create necessary directory and return file path
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        static string GetPostFilePath(CNHCategory category)
         {
             // CNHSpotlightCache/posts/{category}
             string path = Path.Combine(
@@ -71,33 +95,30 @@ namespace CNHSpotlight
                 "CNHSpotlightCache",
                 "posts");
 
-            string file = Path.Combine(path, category.ToString());
-
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            using (StreamWriter streamWriter = new StreamWriter(file))
-            {
-                streamWriter.Write(JsonConvert.SerializeObject(data));
-            }
+            string file = Path.Combine(path, category.ToString());
+
+            return file;
         }
 
+        /// <summary>
+        /// Return all saved posts if they exist 
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
         public static ModelWrapper<List<Post>> GetPostsOffline(CNHCategory category)
         {
             List<Post> postsList = new List<Post>();
 
-            // CNHSpotlightCache/posts/{category}
-            string file = Path.Combine(
-                Android.OS.Environment.ExternalStorageDirectory.Path,
-                "CNHSpotlightCache",
-                "posts",
-                category.ToString());
+            string filePath = GetPostFilePath(category);
 
-            if (File.Exists(file))
+            if (File.Exists(filePath))
             {
-                using (StreamReader streamReader = new StreamReader(file))
+                using (StreamReader streamReader = new StreamReader(filePath))
                 {
                     postsList = JsonConvert.DeserializeObject<List<Post>>(streamReader.ReadToEnd());
 
@@ -111,94 +132,136 @@ namespace CNHSpotlight
             // at this point either postsList is empty or file does not exist
             return new ModelWrapper<List<Post>>(TaskResult.NoData);
         }
+
+        /// <summary>
+        /// Return a range of all saved posts if they exist
+        /// </summary>
+        /// <param name="category"></param>
+        /// <param name="index"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static ModelWrapper<List<Post>> GetPostsOffline(CNHCategory category, int index, int count)
+        {
+            List<Post> postsList = new List<Post>();
+
+            string filePath = GetPostFilePath(category);
+
+            if (File.Exists(filePath))
+            {
+                using (StreamReader streamReader = new StreamReader(filePath))
+                {
+                    postsList = JsonConvert.DeserializeObject<List<Post>>(streamReader.ReadToEnd());
+
+                    if (postsList != null && postsList.Count > 0)
+                    {
+                        int validCount = Math.Min(postsList.Count - index, count);
+                        if (validCount > 0)
+                        {
+                            return new ModelWrapper<List<Post>>(postsList.GetRange(index, validCount), TaskResult.Success); 
+                        }
+                    }
+                }
+            }
+
+            // at this point either postsList is empty or file does not exist
+            return new ModelWrapper<List<Post>>(TaskResult.NoData);
+        }
         #endregion
 
-        #region User
-        public static void SaveUser(User data)
+        #region Users
+        public static void SaveUsers(string userJsondata)
         {
+            // CNHSpotlightCache/users/{usersfile}
             string path = Path.Combine(
                 Android.OS.Environment.ExternalStorageDirectory.Path,
                 "CNHSpotlightCache",
                 "users");
 
-            string file = Path.Combine(path, data.id.ToString());
+            string file = Path.Combine(path, "users");
 
-            if (!Directory.Exists(path))
+            if(!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
             using (StreamWriter streamWriter = new StreamWriter(file))
             {
-                streamWriter.Write(JsonConvert.SerializeObject(data));
+                streamWriter.Write(userJsondata);
             }
         }
 
-        /// <summary>
-        /// Returns <see cref="User"/> with corresponding userId or null if there is none
-        /// </summary>
-        /// <param name="userId"></param>
-        public static ModelWrapper<User> GetUserOffline(int userId)
+        public static ModelWrapper<List<User>> GetUsersOffline()
         {
-            User user = null;
+            List<User> usersList = new List<User>();
 
-            string path = Path.Combine(
+            // CNHSpotlightCache/users/{usersfile}
+            string file = Path.Combine(
                 Android.OS.Environment.ExternalStorageDirectory.Path,
                 "CNHSpotlightCache",
+                "users",
                 "users");
 
-            string file = Path.Combine(path, userId.ToString());
 
             if (File.Exists(file))
             {
                 using (StreamReader streamReader = new StreamReader(file))
                 {
-                    user = JsonConvert.DeserializeObject<User>(streamReader.ReadToEnd());
+                    usersList = JsonConvert.DeserializeObject<List<User>>(streamReader.ReadToEnd());
 
-                    if (user != null)
+                    if (usersList != null && usersList.Count > 0)
                     {
-                        return new ModelWrapper<User>(user, TaskResult.Success);
+                        return new ModelWrapper<List<User>>(usersList, TaskResult.Success);
                     }
                 }
             }
 
-            // at this point, either user is null or file does not exist
-            return new ModelWrapper<User>(TaskResult.NoData);
+            // at this point either postsList is empty or file does not exist
+            return new ModelWrapper<List<User>>(TaskResult.NoData);
         }
         #endregion
 
-        #region MediaImage
-        public static Bitmap GetMediaImageOffline(int mediaId)
+        /// <summary>
+        /// An extension for <see cref="List{T}"/> which supports replace item range
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="index"></param>
+        /// <param name="collection"></param>
+        static void ReplaceItemRange<T>(this List<T> source, int index, List<T> collection)
         {
-            Bitmap bitmap = null;
+            // perform some range validation
 
-            // CNHSpotlightCache/mediaimages/cachedimage{mediaId}
-            string path = Path.Combine(
-                Android.OS.Environment.ExternalStorageDirectory.Path,
-                "CNHSpotlightCache",
-                "mediaimages");
+            // index is outside source range
+            if (index > source.Count || index < 0)
+            {
+                throw new ArgumentOutOfRangeException("index", "index is outside source range");
+            }
 
-            string filePath = Path.Combine(path, string.Format("cachedimage{0}", mediaId));
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection", "collection can not be null");
+            }
 
-            bitmap = GetImageOffline(filePath);
+            // no items to replace
+            if (collection.Count <= 0)
+            {
+                return;
+            }
 
+            // calculation
 
-            return bitmap;
+            // clamp maxRemoveableItemCount to be greater than or equal to zero
+            int maxRemovableItemCount = Math.Max(source.Count - index, 0);
+
+            // clamp intersectItemCount to be less than or equal to maxRemovableItemCount
+            int intersectItemCount = Math.Min(collection.Count, maxRemovableItemCount);
+
+            // remove unnecessary items
+            source.RemoveRange(index, intersectItemCount);
+
+            // insert new items back into intersection range
+            source.InsertRange(index, collection);
+
         }
-
-        public static void SaveMediaImage(Android.Graphics.Bitmap data, int mediaId)
-        {
-
-            // CNHSpotlightCache/mediaimages/cachedimage{mediaId}
-            string path = Path.Combine(
-                Android.OS.Environment.ExternalStorageDirectory.Path,
-                "CNHSpotlightCache",
-                "mediaimages");
-
-            string fileName = string.Format("cachedimage{0}", mediaId);
-
-            SaveImageOffline(data, path, fileName);
-        }
-        #endregion
     }
 }

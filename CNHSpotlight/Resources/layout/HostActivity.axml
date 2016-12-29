@@ -23,5 +23,10 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:id="@+id/hostActivity_navigationview"
-        app:menu="@menu/navigation_menu" />
+        android:background="@color/navigationview_background"
+        android:theme="@style/NavigationViewTheme"
+        app:menu="@menu/navigation_menu"
+        app:itemBackground="@color/navigationview_background"
+        app:itemTextColor="@color/navigationview_item_text"
+        app:itemIconTint="@color/navigationview_item_icon_tint"/>
 </android.support.v4.widget.DrawerLayout>

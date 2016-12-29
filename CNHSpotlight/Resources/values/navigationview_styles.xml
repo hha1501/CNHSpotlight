@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<resources>
+    <style name="NavigationViewTheme">
+        <item name="android:textColorPrimary">@color/navigationview_text_primary</item>
+        <item name="android:textColorSecondary">@color/navigationview_text_secondary</item>
+        <item name="android:dividerHeight">0.5dp</item>
+        <item name="android:listDivider">@color/navigationview_list_divider</item>
+    </style>
+</resources>

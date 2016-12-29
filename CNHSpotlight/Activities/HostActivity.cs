@@ -12,10 +12,10 @@ using Android.Support.V4.Widget;
 
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
-using WordPressPCL.Models;
 using Newtonsoft.Json;
 
 using CNHSpotlight.WordPress;
+using CNHSpotlight.WordPress.Models;
 
 namespace CNHSpotlight
 {
@@ -67,11 +67,11 @@ namespace CNHSpotlight
             navigationView = FindViewById<NavigationView>(Resource.Id.hostActivity_navigationview);
             navigationView.NavigationItemSelected += (o, e) => OnNavigationItemSelected(o, e);
 
-            // load news from default category
-            FetchNews(CNHCategory.News);
-
             // update navigationView item selected state
-            navigationView.Menu.FindItem(Resource.Id.navigation_menu_item_news).SetChecked(true);         
+            navigationView.Menu.FindItem(Resource.Id.navigation_menu_item_news).SetChecked(true);
+
+            PrepareNewsFragment();
+
         }
 
         #region Overrirden methods required by actionBarDrawerToggle
@@ -97,28 +97,38 @@ namespace CNHSpotlight
         }
         #endregion
 
-        void FetchNews(CNHCategory category)
+        /// <summary>
+        /// Call fetch news from NewsFragment
+        /// </summary>
+        private void FetchNews(CNHCategory category)
         {
+            newsFragment.FetchNews(category);
+        }
 
-            // the first time NewsFragement is loaded
-            if (newsFragment == null)
+        void PrepareNewsFragment()
+        {
+            if (newsFragment != null)
             {
-                newsFragment = new NewsFragment(category);
+                return;
+            }
 
-                // place in NewsFragment
-                Android.Support.V4.App.FragmentTransaction fragmentTransaction = SupportFragmentManager.BeginTransaction();
-                fragmentTransaction.Replace(Resource.Id.hostActivity_fragment_layout, newsFragment).Commit();
-            }
-            else
-            {
-                newsFragment.FetchNews(category);
-            }
+            // place in NewsFragment
+            newsFragment = new NewsFragment();
+            Android.Support.V4.App.FragmentTransaction fragmentTransaction = SupportFragmentManager.BeginTransaction();
+            fragmentTransaction.Replace(Resource.Id.hostActivity_fragment_layout, newsFragment).Commit();
         }
 
         public void ReadNews(Post post)
         {
             Intent intent = new Intent(this, typeof(ReadNewsActivity));
             intent.PutExtra("post_Json_extra", JsonConvert.SerializeObject(post));
+
+            StartActivity(intent);
+        }
+
+        void OpenAbout()
+        {
+            Intent intent = new Intent(this, typeof(AboutActivity));
 
             StartActivity(intent);
         }
@@ -157,6 +167,9 @@ namespace CNHSpotlight
                     break;
                 case Resource.Id.navigation_menu_item_trivial:
                     FetchNews(CNHCategory.Trivial);
+                    break;
+                case Resource.Id.navigation_menu_item_about:
+                    OpenAbout();
                     break;
                 default:
                     break;

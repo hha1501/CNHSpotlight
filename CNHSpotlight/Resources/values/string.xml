@@ -11,6 +11,12 @@
     <string name="nav_menu_item_outsideclass">"Outside class"</string>
     <string name="nav_menu_item_trivial">"Trivial"</string>
 
+    <string name="nav_menu_subitem_more">More</string>
+    <string name="nav_menu_item_about">About</string>
+
+    <string name="about_menu_item_members">Members</string>
+    <string name="about_menu_item_copyright">Copyright</string>
+
     <string name="actionbardrawertoggle_description_open">"Open"</string>
     <string name="actionbardrawertoggle_description_close">"Close"</string>
 </resources>

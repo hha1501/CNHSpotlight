@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <menu 
   xmlns:android="http://schemas.android.com/apk/res/android">
+  <!--Categories-->
   <group android:checkableBehavior="single">
     <item
       android:icon="@drawable/ic_subtitles_white_24dp"
@@ -43,4 +44,14 @@
       android:id="@+id/navigation_menu_item_trivial"
       android:title="@string/nav_menu_item_trivial"/>
   </group>
+  <!--About-->
+  <item
+    android:title="@string/nav_menu_subitem_more">
+    <menu>
+      <item
+        android:icon="@drawable/ic_help_outline_white_24dp"
+        android:id="@+id/navigation_menu_item_about"
+        android:title="@string/nav_menu_item_about"/>
+     </menu>
+  </item>
 </menu>

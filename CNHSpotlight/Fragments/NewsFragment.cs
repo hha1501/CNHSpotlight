@@ -1,27 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Text;
 
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
-using Android.Widget;
-
-using Android.Net;
 
 using Android.Support.Design.Widget;
+using Android.Support.V7.Widget;
 using Android.Support.V4.Widget;
 
-using WordPressPCL.Models;
-using Newtonsoft.Json;
 
 using CNHSpotlight.WordPress;
+using CNHSpotlight.WordPress.Models;
+using CNHSpotlight.Components;
 
 namespace CNHSpotlight
 {
@@ -30,7 +19,7 @@ namespace CNHSpotlight
         // UIs
         SwipeRefreshLayout swipeRefreshLayout;
 
-        ListView listviewNews;
+        RecyclerView recyclerView;
 
         // current category
         CNHCategory currentCategory { get; set; }
@@ -38,17 +27,25 @@ namespace CNHSpotlight
         // bool for refreshing indication
         bool IsRefreshing;
 
-        // constructor
-        public NewsFragment(CNHCategory category)
-        {
-            currentCategory = category;
-        }
+        // bool for loading more indication
+        bool IsLoadingMore;
+
+        // bool for loading more capability
+        bool canLoadMore = true;
+
+        // Endless scrolling listener
+        RecyclerViewEndlessScrollListener endlessScrollListener;
+
+        // current RecyclerViewAdapter
+        NewsRecyclerAdapter currentAdapter;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             HasOptionsMenu = true;
+
+            currentCategory = CNHCategory.News;
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -58,31 +55,91 @@ namespace CNHSpotlight
             // fetch news with default category: News
             swipeRefreshLayout.Refresh += async (o, e) => await FetchLatestNews(currentCategory);
 
-            // listview news
-            listviewNews = swipeRefreshLayout.FindViewById<ListView>(Resource.Id.newsFragment_listview_newslist);
-            listviewNews.ItemClick += NewsClick;
+            // recycler view & setup
+            recyclerView = swipeRefreshLayout.FindViewById<RecyclerView>(Resource.Id.newsfragment_recyclerview);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Activity);
+            recyclerView.SetLayoutManager(linearLayoutManager);
 
+            // prepare adapter (an empty one)
+            currentAdapter = new NewsRecyclerAdapter(Activity, recyclerView);
+            currentAdapter.ItemClick += (o, e) => NewsClick(e.ItemPosition);
+
+            recyclerView.SetAdapter(currentAdapter);
+
+            // apply scroll listener to recyclerview
+            endlessScrollListener = new RecyclerViewEndlessScrollListener(linearLayoutManager, currentAdapter);
+            endlessScrollListener.OnScrollToEnd += async (int count) => await OnRequireLoadMore(count);
+
+            recyclerView.AddOnScrollListener(endlessScrollListener);
 
             return swipeRefreshLayout;
+        }
+
+        private async Task OnRequireLoadMore(int scrolledItemCount)
+        {
+            if (canLoadMore && !IsLoadingMore)
+            {
+                IsLoadingMore = true;
+                currentAdapter.SetLoadingAnimation(true);
+
+                var posts = await WordpressExtension.GetPosts(currentCategory, scrolledItemCount, 10);
+
+                switch (posts.Result)
+                {
+                    case TaskResult.Error:
+                        Snackbar.Make(swipeRefreshLayout, "Error occured", Snackbar.LengthShort).Show();
+                        break;
+                    case TaskResult.NoInternet:
+                        Snackbar
+                            .Make(swipeRefreshLayout, "No connection", Snackbar.LengthLong)
+                            .SetAction("Retry", async (view) =>
+                            {
+                                await OnRequireLoadMore(scrolledItemCount);
+                            })
+                            .Show();
+                        break;
+                    case TaskResult.NoData:
+                        canLoadMore = false;
+                        break;
+                    case TaskResult.Success:
+                        // add posts
+                        currentAdapter.AddItems(posts.Data);
+
+                        // scroll to the first item of new batch of posts
+                        recyclerView.SmoothScrollToPosition(scrolledItemCount);
+                        break;
+                    default:
+                        break;
+                }
+
+                IsLoadingMore = false;
+                currentAdapter.SetLoadingAnimation(false);
+            }
         }
 
         public override void OnResume()
         {
             base.OnResume();
 
-            if (listviewNews.Count <= 0)
+            if (recyclerView.GetAdapter() == null || recyclerView.GetAdapter().ItemCount <= 0)
             {
-                Task.Run(() => FetchNews(currentCategory));
+                FetchNews(currentCategory);
             }
         }
 
-        private void NewsClick(object sender, AdapterView.ItemClickEventArgs e)
+        private void NewsClick(int position)
         {
             if (!IsRefreshing)
             {
-                NewsListViewAdapter adapter = (NewsListViewAdapter)listviewNews.Adapter;
-                Post post = adapter[e.Position];
 
+                // get post
+                Post post = currentAdapter.GetItem(position);
+
+                if (post == null)
+                {
+                    return;
+                }
+                
                 // start readnewsFragment
                 HostActivity hostActivity = (HostActivity)Activity;
 
@@ -92,57 +149,63 @@ namespace CNHSpotlight
 
         public void FetchNews(CNHCategory category)
         {
-            // clear list view if it is another category
-            if (category != currentCategory)
+            // only refresh when idle
+            if (IsRefreshing)
             {
-                Activity.RunOnUiThread(() =>
-                {
-                    listviewNews.Adapter = null;
-                });
+                return;
             }
 
-            swipeRefreshLayout.Refreshing = true;
+            // update state
             IsRefreshing = true;
 
-            var posts = DataManager.GetPostsOffline(category);
-           
+            // start refreshing animation
+            swipeRefreshLayout.Refreshing = true;
 
-            Activity.RunOnUiThread(async () =>
+            // clear item if it is another cateogry
+            if (currentCategory != category)
             {
-
-                switch (posts.Result)
-                {
-                    case TaskResult.Success:
-                        var thumbnailImages = await ImageResource.ImageGetter.GetAllMediaImages(posts.Data);
-                        NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data, thumbnailImages);
-
-                        listviewNews.Adapter = newsAdapter;
-                        break;
-
-                    case TaskResult.NoData:
-                        Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
-                        break;
-
-                    default:
-                        break;
+                currentAdapter.ClearItems();
             }
 
-            });
+            // try to get posts
+            var posts = DataManager.GetPostsOffline(category, 0, 10);
 
-            currentCategory = category;
-            swipeRefreshLayout.Refreshing = false;
+
+            switch (posts.Result)
+            {
+                case TaskResult.Success:
+                    currentAdapter.ReplaceItems(posts.Data);
+                    break;
+
+                case TaskResult.NoData:
+                    Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
+                    break;
+
+                default:
+                    break;
+            }
+
+            // update state
             IsRefreshing = false;
+            currentCategory = category;
+
+            // stop refreshing animation
+            swipeRefreshLayout.Refreshing = false;
+
+            // reset load more state
+            canLoadMore = true;
+
 
         }
 
         public async Task FetchLatestNews(CNHCategory category)
         {
-
-            // clear list view if it is another category
-            if (category != currentCategory)
+            // only refresh when idle
+            if (IsRefreshing)
             {
-                listviewNews.Adapter = null;
+                return;
             }
+
 
             swipeRefreshLayout.Refreshing = true;
             IsRefreshing = true;
@@ -166,10 +229,7 @@ namespace CNHSpotlight
                     break;
 
                 case TaskResult.Success:
-                    var thumbnailImages = await ImageResource.ImageGetter.GetAllMediaImages(posts.Data);
-                    NewsListViewAdapter newsAdapter = new NewsListViewAdapter(Activity, posts.Data, thumbnailImages);
-                    
-                    listviewNews.Adapter = newsAdapter;
+                    currentAdapter.ReplaceItems(posts.Data);
                     break;
 
                 default:
@@ -183,6 +243,9 @@ namespace CNHSpotlight
             // stop refreshing animation
             swipeRefreshLayout.Refreshing = false;
             IsRefreshing = false;
+
+            // reset load more state
+            canLoadMore = true;
         }
     }
 }

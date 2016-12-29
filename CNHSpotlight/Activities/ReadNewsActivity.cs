@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 using Android.OS;
@@ -10,10 +11,10 @@ using Android.Webkit;
 
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
-using WordPressPCL.Models;
 using Newtonsoft.Json;
 
 using CNHSpotlight.HtmlParser;
+using CNHSpotlight.WordPress.Models;
 
 namespace CNHSpotlight
 {
@@ -38,12 +39,13 @@ namespace CNHSpotlight
             // toolbar
             toolbar = FindViewById<Toolbar>(Resource.Id.readnewsActivity_toolbar);
             SetSupportActionBar(toolbar);
-            SupportActionBar.Title = "CNH Spotlight";
+            SupportActionBar.Title = null;
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
 
 
             // content
             webviewContent = FindViewById<WebView>(Resource.Id.readnewsActivity_webview_content);
+            webviewContent.Settings.JavaScriptEnabled = true;
 
             // get current post
             string postJson = Intent.GetStringExtra("post_Json_extra");
@@ -51,24 +53,33 @@ namespace CNHSpotlight
 
         }
 
-        protected override async void OnResume()
+        protected override void OnResume()
         {
             base.OnResume();
 
-            await LoadNews(currentPost);
+            Task.Run(() => 
+            {
+                try
+                {
+                    LoadNews(currentPost);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            });
         }
 
-
-
-
-        private async Task LoadNews(Post currentPost)
+        private void LoadNews(Post currentPost)
         {
-            string html = await HtmlFormatter.FormatPost(currentPost);
+            string html = HtmlFormatter.FormatPost(currentPost);
 
-            webviewContent.LoadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+            RunOnUiThread(() =>
+            {
+                webviewContent.LoadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+            });
+
         }
-
-
 
     }
 }

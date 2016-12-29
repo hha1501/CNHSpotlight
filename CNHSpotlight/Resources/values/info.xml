@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="cnhspotlight_about">
+      Đội ngũ phóng viên, biên tập viên trẻ tuổi của CNH Spotlight luôn cố gắng mang thông tin của ngôi trường cấp 3 đầy thú vị này đến các bạn học sinh, thầy cô cùng phụ huynh một cách nhanh chóng và chính xác nhất.\n\nMọi thông tin xin liên hệ cnhspotlight@gmail.com
+    </string>
+    <string name="cnhspotlight_copyright_title">
+      CNH Spotlight
+    </string>
+    <string name="cnhspotlight_copyright_content">
+      Bản quyền thuộc CNH Spotlight © 2016. Vận hành bởi câu lạc bộ CNH Spotlight
+    </string>
+</resources>

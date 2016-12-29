@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <color name="cardview_post_background">#FFFFFF</color>
+    <color name="recyclerview_posts_background">#E8E8EE</color>
+    <color name="cardview_post_title">#000000</color>
+    <color name="cardview_post_author">#AAAAAA</color>
+    <color name="navigationview_background">#000000</color>
+    <color name="navigationview_item_text">#FFFFFF</color>
+    <color name="navigationview_item_icon_tint">#ABABAB</color>
+    <color name="navigationview_text_primary">#FFFFFF</color>
+    <color name="navigationview_text_secondary">#FFFFFF</color>
+    <color name="navigationview_list_divider">#FFFFFF</color>
+</resources>

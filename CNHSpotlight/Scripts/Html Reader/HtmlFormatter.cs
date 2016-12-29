@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,100 +12,68 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-using WordPressPCL.Models;
 
 using HtmlAgilityPack;
 
 using CNHSpotlight.WordPress;
+using CNHSpotlight.WordPress.Models;
 
 namespace CNHSpotlight.HtmlParser
 {
     static class HtmlFormatter
     {
-        static readonly string HtmlWrap = @"<html></html>";
-        static readonly string ImageStyle = 
-            @"<head>
-                <style>
-                    img{display: inline;height: auto;max-width: 100%;}
-                    figure{margin-left: 0;margin-right: 0;}
-                    iframe{width: 100%; height: auto;}
-                </style>
-              </head>";
 
-        public static async Task<string> FormatPost(Post post)
+        /// <summary>
+        /// The formatting process might be time consuming. Consider executing this on another thread
+        /// </summary>
+        /// <param name="post"></param>
+        /// <returns></returns>
+        public static string FormatPost(Post post)
         {
-            string author = await WordPressExtension.GetUserName(post.Author);
+            // inflate post-heading -- which contains Title and Author data
+            HtmlDocument headingDoc = new HtmlDocument();
+            headingDoc.LoadHtml(GetAssetData("post-heading.html"));
 
-            DateTime date = post.Date;
+            // insert title
+            headingDoc.GetElementbyId("title").InnerHtml = post.Title.Rendered;
 
-            // load html to modify
-            HtmlDocument htmlDocument = new HtmlDocument();
+            // insert meta (author)
+            headingDoc.GetElementbyId("author").InnerHtml = post.Embedded.Author.FirstOrDefault().Name;
 
-            // create a wrapper to wrap content
-            htmlDocument.LoadHtml(HtmlWrap);
+            // insert meta (publish date)
+            headingDoc.GetElementbyId("publish-date").InnerHtml = post.Date.ToString("D");
 
-            // wrap content by root node
-            // First is <html></html>
-            HtmlNode topNode = htmlDocument.DocumentNode.FirstChild;
+            // insert thumbnail (adding src)
+            headingDoc.GetElementbyId("thumbnail")
+                .SetAttributeValue("src", post.Embedded.WpFeaturedMedia.FirstOrDefault().SourceUrl);
 
-            // add style to node
-            topNode.AppendChild(HtmlNode.CreateNode(ImageStyle));
+            // inflate post-template
+            HtmlDocument templateDoc = new HtmlDocument();
+            templateDoc.LoadHtml(GetAssetData("post-template.html"));
 
-            // extra info & content
-            string extraInfo = string.Format("{0}     {1}", author, date);
+            // add css
+            templateDoc.GetElementbyId("style").InnerHtml = GetAssetData("post-detail.css");
 
-            string content = string.Format("<body><div>{0}\n{1}</div></body>", extraInfo, post.Content.Rendered);
+            // add heading
+            templateDoc.GetElementbyId("heading").InnerHtml = headingDoc.DocumentNode.OuterHtml;
 
-            topNode.InnerHtml += content;
+            // add content
+            templateDoc.GetElementbyId("content").InnerHtml = post.Content.Rendered;
 
-            // modify images
+            return templateDoc.DocumentNode.OuterHtml;
+        }
 
-            // 'figure' block modification
-            foreach (HtmlNode figureNode in htmlDocument.DocumentNode.Descendants("figure").ToList())
+        static string GetAssetData(string filePath)
+        {
+            string data = string.Empty;
+            using (StreamReader streamReader = new StreamReader(Application.Context.Assets.Open(filePath)))
             {
-                figureNode.Attributes.RemoveAll();
+                data = streamReader.ReadToEnd();
             }
 
-            // inline modification
-            foreach (HtmlNode imageNode in htmlDocument.DocumentNode.Descendants("img"))
-            {
-
-                foreach (HtmlAttribute imageAttribute in imageNode.Attributes.ToList())
-                {
-                    // skip 'src' and 'alt' attributes
-                    if (imageAttribute.Name == "src" || imageAttribute.Name == "alt")
-                    {
-                        continue;
-                    }
-
-                    // modify width
-                    if (imageAttribute.Name == "width")
-                    {
-                        imageAttribute.Value = "100%";
-                        continue;
-                    }
-
-                    // modify height
-                    if (imageAttribute.Name == "height")
-                    {
-                        imageAttribute.Value = "auto";
-                        continue;
-                    }
-
-
-                    // other attributes are excluded
-                    imageAttribute.Remove();
-                }
-            }
-
-            // modify iframes
-
-            foreach (HtmlNode iframeNode in htmlDocument.DocumentNode.Descendants("iframe"))
-            {
-
-            }
-
-            return htmlDocument.DocumentNode.InnerHtml;
+            return data;
         }
     }
+
+
 }
