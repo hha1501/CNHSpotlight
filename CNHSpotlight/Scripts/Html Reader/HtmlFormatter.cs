@@ -39,6 +39,7 @@ namespace CNHSpotlight.HtmlParser
 
             // insert meta (author)
             headingDoc.GetElementbyId("author").InnerHtml = post.Embedded.Author.FirstOrDefault().Name;
+            headingDoc.GetElementbyId("author").SetAttributeValue("href", post.Embedded.Author.FirstOrDefault().Link);
 
             // insert meta (publish date)
             headingDoc.GetElementbyId("publish-date").InnerHtml = post.Date.ToString("D");

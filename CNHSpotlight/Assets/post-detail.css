@@ -1,9 +1,14 @@
-﻿.post-title {
+﻿.heading .post-title {
 	padding: 0px 20px 0px 20px;
     margin-bottom: 15px;
 }
 
-.post-title h1, .post-title h2, .post-title h3, .post-title h4, .post-title h5, .post-title h6
+.heading .post-title h1,
+.heading .post-title h2,
+.heading .post-title h3,
+.heading .post-title h4,
+.heading .post-title h5,
+.heading .post-title h6
 {
 	color: #333;
 	margin: 10px 0px 10px 0px;
@@ -12,31 +17,36 @@
 	font-family:'Roboto Bold',sans-serif;
 }
 
-.post-meta 
+.heading .post-meta 
 {
     font-size: 14px;
     color: #a1a1a1;
     padding-top: 5px;
 }
 
-.post-author
+.heading .post-author
 {
     padding: 0px 10px 0px 0px;
     border-right: 1px #e7e7e7 solid;
 }
 
-.post-publish-date 
+.heading a.post-author, .heading a.post-author:link, .heading a.post-author:visited
+{
+    color: #a1a1a1;
+}
+
+.heading .post-publish-date 
 {
     padding: 0px 0px 0px 10px;
 }
 
-.post-thumbnail {
+.heading .post-thumbnail {
     width: 100%;
     height:auto;
     margin: 0;
 }
 
-p 
+.content p 
 {
     font-family: 'PT Serif Regular', Georgia, serif;
     color: #4c4c4c;
@@ -45,14 +55,14 @@ p
 	margin: 20px 0px 10px 0px;
 }
 
-img
+.content img
 {
     display: inline;
     height: auto;
     width: 100%;
 }
 
-.wp-caption-text {
+.content .wp-caption-text {
     font-size: 14px;
     line-height: 21px;
     padding: 0px 0px 0px 30px;
@@ -64,31 +74,31 @@ img
     margin: 10px 0px 0px 0px;
 }
 
-.wp-caption 
+.content .wp-caption 
 {
     margin: 0px;
     width: 100% !important;
 	height: auto;    
 }
 
-a
+.content a
 {
 	font-size: 17px;
 	line-height: 27px;
     text-decoration: none;
 }
 
-a:link 
+.content a:link 
 {
 	color: #168dd9;
 }
 
-a:visited 
+.content a:visited 
 {
 	color: #168dd9;
 }
 
-.embed iframe
+.content .embed iframe
 {
     width: 100%;
     height: auto;

@@ -63,7 +63,7 @@ namespace CNHSpotlight
 
             FragmentTransaction transaction = SupportFragmentManager.BeginTransaction();
             transaction.Replace(Resource.Id.aboutactivity_fragment_container, new AboutFragment()).Commit();
-                
+            
         }
 
         void ShowMember()
@@ -71,7 +71,10 @@ namespace CNHSpotlight
             AboutFragment aboutFragment = new AboutFragment();
 
             FragmentTransaction transaction = SupportFragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.aboutactivity_fragment_container, new MembersFragment()).Commit();
+            transaction
+                .Replace(Resource.Id.aboutactivity_fragment_container, new MembersFragment())
+                .AddToBackStack("member fragment")
+                .Commit();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)

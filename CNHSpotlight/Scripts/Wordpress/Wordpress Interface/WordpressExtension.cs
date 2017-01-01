@@ -36,10 +36,9 @@ namespace CNHSpotlight.WordPress
                             return new ModelWrapper<List<Post>>(TaskResult.Error);
                         case TaskResult.NoInternet:
                             return new ModelWrapper<List<Post>>(TaskResult.NoInternet);
-                        case TaskResult.NoData:
-                            return new ModelWrapper<List<Post>>(TaskResult.NoData);
                         case TaskResult.Success:
                             return new ModelWrapper<List<Post>>(postsOnline.Data, TaskResult.Success);
+                        case TaskResult.NoData:
                         default:
                             return new ModelWrapper<List<Post>>(TaskResult.NoData);
                     }

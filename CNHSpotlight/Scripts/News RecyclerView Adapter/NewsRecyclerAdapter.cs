@@ -66,9 +66,10 @@ namespace CNHSpotlight.Components
 
         public void ClearItems()
         {
+            int lastPostListCount = PostList.Count;
             PostList.Clear();
 
-            NotifyItemRangeRemoved(0, PostList.Count);
+            NotifyItemRangeRemoved(0, lastPostListCount);
         }
 
         public void ReplaceItems(List<Post> newItems)

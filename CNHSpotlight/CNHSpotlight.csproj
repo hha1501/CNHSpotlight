@@ -273,6 +273,11 @@
   <ItemGroup>
     <AndroidAsset Include="Assets\post-heading.html" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\color\navigationview_custom_color.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

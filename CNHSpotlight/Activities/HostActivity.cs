@@ -1,4 +1,6 @@
-﻿using Android.App;
+﻿using System.Threading.Tasks;
+
+using Android.App;
 using Android.Content.PM;
 using Android.Widget;
 using Android.OS;
@@ -100,9 +102,9 @@ namespace CNHSpotlight
         /// <summary>
         /// Call fetch news from NewsFragment
         /// </summary>
-        private void FetchNews(CNHCategory category)
+        private async Task FetchNews(CNHCategory category)
         {
-            newsFragment.FetchNews(category);
+            await newsFragment.FetchNews(category);
         }
 
         void PrepareNewsFragment()
@@ -133,40 +135,40 @@ namespace CNHSpotlight
             StartActivity(intent);
         }
 
-        private void OnNavigationItemSelected(object sender, NavigationView.NavigationItemSelectedEventArgs e)
+        private async void OnNavigationItemSelected(object sender, NavigationView.NavigationItemSelectedEventArgs e)
         {
             drawerLayout.CloseDrawer(navigationView);
             switch (e.MenuItem.ItemId)
             {
                 case Resource.Id.navigation_menu_item_news:
-                    FetchNews(CNHCategory.News);
+                    await FetchNews(CNHCategory.News);
                     break;
                 case Resource.Id.navigation_menu_item_education:
-                    FetchNews(CNHCategory.Education);
+                    await FetchNews(CNHCategory.Education);
                     break;
                 case Resource.Id.navigation_menu_item_education_abroadeducation:
-                    FetchNews(CNHCategory.StudyAbroad);
+                    await FetchNews(CNHCategory.StudyAbroad);
                     break;
                 case Resource.Id.navigation_menu_item_education_contests:
-                    FetchNews(CNHCategory.Contest);
+                    await FetchNews(CNHCategory.Contest);
                     break;
                 case Resource.Id.navigation_menu_item_club:
-                    FetchNews(CNHCategory.Club);
+                    await FetchNews(CNHCategory.Club);
                     break;
                 case Resource.Id.navigation_menu_item_entertainment:
-                    FetchNews(CNHCategory.Entertainment);
+                    await FetchNews(CNHCategory.Entertainment);
                     break;
                 case Resource.Id.navigation_menu_item_cnhicon:
-                    FetchNews(CNHCategory.NHIcon);
+                    await FetchNews(CNHCategory.NHIcon);
                     break;
                 case Resource.Id.navigation_menu_item_cnhinme:
-                    FetchNews(CNHCategory.NHInMe);
+                    await FetchNews(CNHCategory.NHInMe);
                     break;
                 case Resource.Id.navigation_menu_item_outsideclass:
-                    FetchNews(CNHCategory.OutsideClass);
+                    await FetchNews(CNHCategory.OutsideClass);
                     break;
                 case Resource.Id.navigation_menu_item_trivial:
-                    FetchNews(CNHCategory.Trivial);
+                    await FetchNews(CNHCategory.Trivial);
                     break;
                 case Resource.Id.navigation_menu_item_about:
                     OpenAbout();

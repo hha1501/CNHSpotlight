@@ -117,13 +117,13 @@ namespace CNHSpotlight
             }
         }
 
-        public override void OnResume()
+        public override async void OnResume()
         {
             base.OnResume();
 
             if (recyclerView.GetAdapter() == null || recyclerView.GetAdapter().ItemCount <= 0)
             {
-                FetchNews(currentCategory);
+                await FetchNews(currentCategory);
             }
         }
 
@@ -147,7 +147,7 @@ namespace CNHSpotlight
             }
         }
 
-        public void FetchNews(CNHCategory category)
+        public async Task FetchNews(CNHCategory category)
         {
             // only refresh when idle
             if (IsRefreshing)
@@ -168,7 +168,7 @@ namespace CNHSpotlight
             }
 
             // try to get posts
-            var posts = DataManager.GetPostsOffline(category, 0, 10);
+            var posts = await WordpressExtension.GetPosts(category, 0, 10);
 
 
             switch (posts.Result)
@@ -177,8 +177,22 @@ namespace CNHSpotlight
                     currentAdapter.ReplaceItems(posts.Data);
                     break;
 
+                case TaskResult.NoInternet:
+                    Snackbar
+                        .Make(swipeRefreshLayout, "No internet connection", Snackbar.LengthLong)
+                        .SetAction("Retry", async (view) =>
+                        {
+                            await FetchLatestNews(currentCategory);
+                        })
+                        .Show();
+                    break;
+
                 case TaskResult.NoData:
                     Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
+                    break;
+
+                case TaskResult.Error:
+                    Snackbar.Make(swipeRefreshLayout, "Error occured", Snackbar.LengthShort).Show();
                     break;
 
                 default:
@@ -220,7 +234,7 @@ namespace CNHSpotlight
 
                 case TaskResult.NoInternet:
                     Snackbar
-                        .Make(swipeRefreshLayout, "No internet connection", Snackbar.LengthIndefinite)
+                        .Make(swipeRefreshLayout, "No internet connection", Snackbar.LengthLong)
                         .SetAction("Retry", async (view) =>
                         {
                             await FetchLatestNews(currentCategory);

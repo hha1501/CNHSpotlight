@@ -28,5 +28,5 @@
         app:menu="@menu/navigation_menu"
         app:itemBackground="@color/navigationview_background"
         app:itemTextColor="@color/navigationview_item_text"
-        app:itemIconTint="@color/navigationview_item_icon_tint"/>
+        app:itemIconTint="@color/navigationview_custom_color" />
 </android.support.v4.widget.DrawerLayout>
