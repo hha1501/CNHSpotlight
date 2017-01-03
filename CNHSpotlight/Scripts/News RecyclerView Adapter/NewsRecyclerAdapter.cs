@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Text;
 using Android.Views;
-using Android.Graphics;
 using Android.Widget;
 using Android.Support.V7.Widget;
 
@@ -74,10 +69,11 @@ namespace CNHSpotlight.Components
 
         public void ReplaceItems(List<Post> newItems)
         {
-            PostList.Clear();
+            ClearItems();
+
             PostList.AddRange(newItems);
 
-            NotifyItemRangeChanged(0, newItems.Count);
+            NotifyItemRangeInserted(0, newItems.Count);
         }
 
         /// <summary>
@@ -95,8 +91,6 @@ namespace CNHSpotlight.Components
                 PostList.Add(new DummyLoadingPost());
 
                 NotifyItemInserted(PostList.Count - 1);
-                // scroll to progressbar
-                RecyclerView.SmoothScrollToPosition(PostList.Count - 1);
 
                 IsLoadingShown = true;
             }
@@ -166,7 +160,9 @@ namespace CNHSpotlight.Components
                 case ViewType.DummyLoadingPost:
                     View loadingItemView =
                         LayoutInflater.FromContext(context).Inflate(Resource.Layout.ProgressbarViewItem, parent, false);
+
                     DummyLoadingViewHolder newLoadingHolder = new DummyLoadingViewHolder(loadingItemView);
+
                     return newLoadingHolder;
             }
 
@@ -188,7 +184,8 @@ namespace CNHSpotlight.Components
             #pragma warning disable CS0618
             currentViewHolder.Title.TextFormatted = Html.FromHtml(currentPost.Title.Rendered);
 
-            var author = currentPost.Embedded.Author.FirstOrDefault();
+            // author
+            MediaAuthor author = currentPost.Embedded.Author.FirstOrDefault();
 
             currentViewHolder.Author.Text = author != null ? author.Name : "Unknown";
 

@@ -68,7 +68,7 @@ namespace CNHSpotlight
 
             // apply scroll listener to recyclerview
             endlessScrollListener = new RecyclerViewEndlessScrollListener(linearLayoutManager, currentAdapter);
-            endlessScrollListener.OnScrollToEnd += async (int count) => await OnRequireLoadMore(count);
+            endlessScrollListener.OnThresholdReached += async (int count) => await OnRequireLoadMore(count);
 
             recyclerView.AddOnScrollListener(endlessScrollListener);
 
@@ -105,8 +105,6 @@ namespace CNHSpotlight
                         // add posts
                         currentAdapter.AddItems(posts.Data);
 
-                        // scroll to the first item of new batch of posts
-                        recyclerView.SmoothScrollToPosition(scrolledItemCount);
                         break;
                     default:
                         break;
@@ -160,12 +158,6 @@ namespace CNHSpotlight
 
             // start refreshing animation
             swipeRefreshLayout.Refreshing = true;
-
-            // clear item if it is another cateogry
-            if (currentCategory != category)
-            {
-                currentAdapter.ClearItems();
-            }
 
             // try to get posts
             var posts = await WordpressExtension.GetPosts(category, 0, 10);

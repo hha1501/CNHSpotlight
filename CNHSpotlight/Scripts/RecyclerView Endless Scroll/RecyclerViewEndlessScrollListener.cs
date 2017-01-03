@@ -18,15 +18,17 @@ namespace CNHSpotlight
     class RecyclerViewEndlessScrollListener : RecyclerView.OnScrollListener
     {
         /// <summary>
-        /// Triggered when scroll to end, providing the number of scrolled items
+        /// Triggered when scroll to threshold, providing the number of current items
         /// </summary>
-        public event Action<int> OnScrollToEnd;
+        public event Action<int> OnThresholdReached;
 
         public int TotalItemCount { get; private set; }
 
         public int LastVisibleItemPosition { get; private set; }
 
         public int PassedItemCount { get; private set; }
+
+        public int TriggerThreshold { get; private set; }
 
         public LinearLayoutManager LayoutManager { get; private set; }
 
@@ -39,6 +41,8 @@ namespace CNHSpotlight
         {
             LayoutManager = layoutManager;
             RecyclerViewAdapter = adapter;
+
+            TriggerThreshold = 1;
         }
 
         public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
@@ -54,12 +58,12 @@ namespace CNHSpotlight
 
                 int dummyLoadingItemSubstitution = RecyclerViewAdapter.IsLoadingShown ? 1 : 0;
 
-                // reach end
-                if (PassedItemCount >= TotalItemCount)
+                // reach threshold
+                if (PassedItemCount + TriggerThreshold >= TotalItemCount)
                 {
                     if (!triggerLock)
                     {
-                        OnScrollToEnd?.Invoke(PassedItemCount - dummyLoadingItemSubstitution);
+                        OnThresholdReached?.Invoke(RecyclerViewAdapter.ItemCount - dummyLoadingItemSubstitution);
 
                         triggerLock = true; 
                     }
