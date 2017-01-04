@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <resources>
+    <string name="nav_menu_item_latest">"Latest"</string>
     <string name="nav_menu_item_news">"News"</string>
     <string name="nav_menu_item_education">"Education"</string>
     <string name="nav_menu_item_education_abroadeducation">"Abroad education"</string>

@@ -45,7 +45,7 @@ namespace CNHSpotlight
 
             HasOptionsMenu = true;
 
-            currentCategory = CNHCategory.News;
+            currentCategory = CNHCategory.Latest;
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

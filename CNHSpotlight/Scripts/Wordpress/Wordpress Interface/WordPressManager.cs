@@ -43,23 +43,24 @@ namespace CNHSpotlight.WordPress
         }
 
         #region Urls
-        static string GetPostQueryUrl(CNHCategory category, int numberOfPosts, int page, int offset)
+        static Uri GetPostQueryUrl(CNHCategory category, int numberOfPosts = 10, int page = 1, int offset = 0)
         {
-            UriBuilder uriBuilder = new UriBuilder(PostUrl);
+            QueryUrlBuilder uriBuilder = new QueryUrlBuilder(PostUrl);
+            uriBuilder
+                .AddQueryParam("per_page", numberOfPosts)
+                .AddQueryParam("page", page)
+                .AddQueryParam("offset", offset)
+                .AddQueryParam("_embed", null);
 
-            // prepare query string
-            // '_embed' query param requests posts with embedded data
-            string queryString = string.Format("_embed&{0}={1}&{2}={3}&{4}={5}&{6}={7}",
-                "categories", (int)category,
-                "per_page", numberOfPosts,
-                "page", page,
-                "offset", offset);
+            // we have to handle category specially
+            if (category != CNHCategory.Latest)
+            {
+                uriBuilder.AddQueryParam("categories", (int)category);
+            }
 
-            uriBuilder.Query = queryString;
+            return uriBuilder.Build();
 
-            return uriBuilder.Uri.ToString();
         }
-
         static string GetUsersQueryUrl()
         {
             UriBuilder uriBuilder = new UriBuilder(UserUrl);
@@ -95,6 +96,7 @@ namespace CNHSpotlight.WordPress
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
+                    
                     string postsData = await httpClient.GetStringAsync(GetPostQueryUrl(category, numberOfPosts, page, offset));
 
                     List<Post> tempList = JsonConvert.DeserializeObject<List<Post>>(postsData);
@@ -157,10 +159,56 @@ namespace CNHSpotlight.WordPress
             }
         }
 
+        class QueryUrlBuilder
+        {
+            UriBuilder uriBuilder;
+            Dictionary<string, object> queryParams;
+
+            public QueryUrlBuilder(string baseUrl)
+            {
+                uriBuilder = new UriBuilder(baseUrl);
+                queryParams = new Dictionary<string, object>();
+            }
+
+            public QueryUrlBuilder AddQueryParam(string key, object data)
+            {
+                try
+                {
+                    queryParams.Add(key, data);
+                }
+                catch (ArgumentException)
+                {
+                    throw new ArgumentException($"Key with value {key} already exists");
+                }
+
+                return this;
+            }
+
+            public Uri Build()
+            {
+                uriBuilder.Query = GetQueryString();
+
+                return uriBuilder.Uri;
+            }
+
+            private string GetQueryString()
+            {
+                IEnumerable<string> queryCollection = queryParams
+                    .Select(query =>
+                    {
+                        return (query.Value != null) ?
+                        string.Format("{0}={1}", query.Key, query.Value) : query.Key;
+                    });
+
+                return string.Join("&", queryCollection);
+            }
+        }
+
     }
 
     public enum CNHCategory
     {
+        Latest = 0,
         News = 2,
         OutsideClass = 38,
         Club = 36,

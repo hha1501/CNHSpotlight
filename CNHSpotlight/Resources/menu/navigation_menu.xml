@@ -4,6 +4,10 @@
   <!--Categories-->
   <group android:checkableBehavior="single">
     <item
+      android:icon="@drawable/ic_grade_white_24dp"
+      android:id="@+id/navigation_menu_item_latest"
+      android:title="@string/nav_menu_item_latest" />
+    <item
       android:icon="@drawable/ic_subtitles_white_24dp"
       android:id="@+id/navigation_menu_item_news"
       android:title="@string/nav_menu_item_news" />

@@ -70,7 +70,7 @@ namespace CNHSpotlight
             navigationView.NavigationItemSelected += (o, e) => OnNavigationItemSelected(o, e);
 
             // update navigationView item selected state
-            navigationView.Menu.FindItem(Resource.Id.navigation_menu_item_news).SetChecked(true);
+            navigationView.Menu.FindItem(Resource.Id.navigation_menu_item_latest).SetChecked(true);
 
             PrepareNewsFragment();
 

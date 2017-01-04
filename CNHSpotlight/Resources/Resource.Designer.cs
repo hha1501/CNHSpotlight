@@ -2080,49 +2080,52 @@ namespace CNHSpotlight
 			public const int ic_domain_white_24dp = 2130837593;
 			
 			// aapt resource value: 0x7f02005a
-			public const int ic_group_white_24dp = 2130837594;
+			public const int ic_grade_white_24dp = 2130837594;
 			
 			// aapt resource value: 0x7f02005b
-			public const int ic_help_outline_white_24dp = 2130837595;
+			public const int ic_group_white_24dp = 2130837595;
 			
 			// aapt resource value: 0x7f02005c
-			public const int ic_insert_emoticon_white_24dp = 2130837596;
+			public const int ic_help_outline_white_24dp = 2130837596;
 			
 			// aapt resource value: 0x7f02005d
-			public const int ic_landscape_white_24dp = 2130837597;
+			public const int ic_insert_emoticon_white_24dp = 2130837597;
 			
 			// aapt resource value: 0x7f02005e
-			public const int ic_local_activity_white_24dp = 2130837598;
+			public const int ic_landscape_white_24dp = 2130837598;
 			
 			// aapt resource value: 0x7f02005f
-			public const int ic_looks_white_24dp = 2130837599;
+			public const int ic_local_activity_white_24dp = 2130837599;
 			
 			// aapt resource value: 0x7f020060
-			public const int ic_menu_white_24dp = 2130837600;
+			public const int ic_looks_white_24dp = 2130837600;
 			
 			// aapt resource value: 0x7f020061
-			public const int ic_person_white_24dp = 2130837601;
+			public const int ic_menu_white_24dp = 2130837601;
 			
 			// aapt resource value: 0x7f020062
-			public const int ic_public_white_24dp = 2130837602;
+			public const int ic_person_white_24dp = 2130837602;
 			
 			// aapt resource value: 0x7f020063
-			public const int ic_subtitles_white_24dp = 2130837603;
+			public const int ic_public_white_24dp = 2130837603;
 			
 			// aapt resource value: 0x7f020064
-			public const int Icon = 2130837604;
+			public const int ic_subtitles_white_24dp = 2130837604;
 			
 			// aapt resource value: 0x7f020065
-			public const int navigation_empty_icon = 2130837605;
-			
-			// aapt resource value: 0x7f020068
-			public const int notification_template_icon_bg = 2130837608;
+			public const int Icon = 2130837605;
 			
 			// aapt resource value: 0x7f020066
-			public const int placeholder = 2130837606;
+			public const int navigation_empty_icon = 2130837606;
+			
+			// aapt resource value: 0x7f020069
+			public const int notification_template_icon_bg = 2130837609;
 			
 			// aapt resource value: 0x7f020067
-			public const int placeholder_error = 2130837607;
+			public const int placeholder = 2130837607;
+			
+			// aapt resource value: 0x7f020068
+			public const int placeholder_error = 2130837608;
 			
 			static Drawable()
 			{
@@ -2386,38 +2389,41 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f060074
 			public const int navigation_header_container = 2131099764;
 			
-			// aapt resource value: 0x7f0600a1
-			public const int navigation_menu_item_about = 2131099809;
-			
-			// aapt resource value: 0x7f06009b
-			public const int navigation_menu_item_club = 2131099803;
-			
-			// aapt resource value: 0x7f06009d
-			public const int navigation_menu_item_cnhicon = 2131099805;
-			
-			// aapt resource value: 0x7f06009e
-			public const int navigation_menu_item_cnhinme = 2131099806;
-			
-			// aapt resource value: 0x7f060098
-			public const int navigation_menu_item_education = 2131099800;
-			
-			// aapt resource value: 0x7f060099
-			public const int navigation_menu_item_education_abroadeducation = 2131099801;
-			
-			// aapt resource value: 0x7f06009a
-			public const int navigation_menu_item_education_contests = 2131099802;
+			// aapt resource value: 0x7f0600a2
+			public const int navigation_menu_item_about = 2131099810;
 			
 			// aapt resource value: 0x7f06009c
-			public const int navigation_menu_item_entertainment = 2131099804;
+			public const int navigation_menu_item_club = 2131099804;
 			
-			// aapt resource value: 0x7f060097
-			public const int navigation_menu_item_news = 2131099799;
+			// aapt resource value: 0x7f06009e
+			public const int navigation_menu_item_cnhicon = 2131099806;
 			
 			// aapt resource value: 0x7f06009f
-			public const int navigation_menu_item_outsideclass = 2131099807;
+			public const int navigation_menu_item_cnhinme = 2131099807;
+			
+			// aapt resource value: 0x7f060099
+			public const int navigation_menu_item_education = 2131099801;
+			
+			// aapt resource value: 0x7f06009a
+			public const int navigation_menu_item_education_abroadeducation = 2131099802;
+			
+			// aapt resource value: 0x7f06009b
+			public const int navigation_menu_item_education_contests = 2131099803;
+			
+			// aapt resource value: 0x7f06009d
+			public const int navigation_menu_item_entertainment = 2131099805;
+			
+			// aapt resource value: 0x7f060097
+			public const int navigation_menu_item_latest = 2131099799;
+			
+			// aapt resource value: 0x7f060098
+			public const int navigation_menu_item_news = 2131099800;
 			
 			// aapt resource value: 0x7f0600a0
-			public const int navigation_menu_item_trivial = 2131099808;
+			public const int navigation_menu_item_outsideclass = 2131099808;
+			
+			// aapt resource value: 0x7f0600a1
+			public const int navigation_menu_item_trivial = 2131099809;
 			
 			// aapt resource value: 0x7f060022
 			public const int never = 2131099682;
@@ -2975,17 +2981,17 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f090012
 			public const int abc_toolbar_collapse_description = 2131296274;
 			
-			// aapt resource value: 0x7f090034
-			public const int about_menu_item_copyright = 2131296308;
+			// aapt resource value: 0x7f090035
+			public const int about_menu_item_copyright = 2131296309;
 			
-			// aapt resource value: 0x7f090033
-			public const int about_menu_item_members = 2131296307;
+			// aapt resource value: 0x7f090034
+			public const int about_menu_item_members = 2131296308;
+			
+			// aapt resource value: 0x7f090037
+			public const int actionbardrawertoggle_description_close = 2131296311;
 			
 			// aapt resource value: 0x7f090036
-			public const int actionbardrawertoggle_description_close = 2131296310;
-			
-			// aapt resource value: 0x7f090035
-			public const int actionbardrawertoggle_description_open = 2131296309;
+			public const int actionbardrawertoggle_description_open = 2131296310;
 			
 			// aapt resource value: 0x7f090021
 			public const int appbar_scrolling_view_behavior = 2131296289;
@@ -3005,41 +3011,44 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f090025
 			public const int cnhspotlight_copyright_title = 2131296293;
 			
-			// aapt resource value: 0x7f090032
-			public const int nav_menu_item_about = 2131296306;
-			
-			// aapt resource value: 0x7f09002b
-			public const int nav_menu_item_club = 2131296299;
-			
-			// aapt resource value: 0x7f09002d
-			public const int nav_menu_item_cnhicon = 2131296301;
-			
-			// aapt resource value: 0x7f09002e
-			public const int nav_menu_item_cnhinme = 2131296302;
-			
-			// aapt resource value: 0x7f090028
-			public const int nav_menu_item_education = 2131296296;
-			
-			// aapt resource value: 0x7f090029
-			public const int nav_menu_item_education_abroadeducation = 2131296297;
-			
-			// aapt resource value: 0x7f09002a
-			public const int nav_menu_item_education_contests = 2131296298;
+			// aapt resource value: 0x7f090033
+			public const int nav_menu_item_about = 2131296307;
 			
 			// aapt resource value: 0x7f09002c
-			public const int nav_menu_item_entertainment = 2131296300;
+			public const int nav_menu_item_club = 2131296300;
 			
-			// aapt resource value: 0x7f090027
-			public const int nav_menu_item_news = 2131296295;
+			// aapt resource value: 0x7f09002e
+			public const int nav_menu_item_cnhicon = 2131296302;
 			
 			// aapt resource value: 0x7f09002f
-			public const int nav_menu_item_outsideclass = 2131296303;
+			public const int nav_menu_item_cnhinme = 2131296303;
+			
+			// aapt resource value: 0x7f090029
+			public const int nav_menu_item_education = 2131296297;
+			
+			// aapt resource value: 0x7f09002a
+			public const int nav_menu_item_education_abroadeducation = 2131296298;
+			
+			// aapt resource value: 0x7f09002b
+			public const int nav_menu_item_education_contests = 2131296299;
+			
+			// aapt resource value: 0x7f09002d
+			public const int nav_menu_item_entertainment = 2131296301;
+			
+			// aapt resource value: 0x7f090027
+			public const int nav_menu_item_latest = 2131296295;
+			
+			// aapt resource value: 0x7f090028
+			public const int nav_menu_item_news = 2131296296;
 			
 			// aapt resource value: 0x7f090030
-			public const int nav_menu_item_trivial = 2131296304;
+			public const int nav_menu_item_outsideclass = 2131296304;
 			
 			// aapt resource value: 0x7f090031
-			public const int nav_menu_subitem_more = 2131296305;
+			public const int nav_menu_item_trivial = 2131296305;
+			
+			// aapt resource value: 0x7f090032
+			public const int nav_menu_subitem_more = 2131296306;
 			
 			// aapt resource value: 0x7f090013
 			public const int search_menu_title = 2131296275;
