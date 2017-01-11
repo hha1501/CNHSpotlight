@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Android.Content;
 using Android.Text;
@@ -12,6 +13,7 @@ using Com.Bumptech.Glide;
 using Com.Bumptech.Glide.Load.Engine;
 
 using CNHSpotlight.WordPress.Models;
+using CNHSpotlight.WordPress;
 
 namespace CNHSpotlight.Components
 {
@@ -21,33 +23,207 @@ namespace CNHSpotlight.Components
         // properties and fields
         Context context;
 
-        public RecyclerView RecyclerView { get; private set; }
-
         public List<Post> PostList { get; private set; }
 
-        public bool IsLoadingShown { get; private set; }
+        public bool IsLoading { get; private set; }
+
+        public bool IsLoadingMore { get; private set; }
+
+        public bool CanLoadMore { get; private set; }
+
+        // data properties
+        public CNHCategory Category { get; private set; }
+
+        public string SearchKeyword { get; private set; }
+
+        public bool IsSearchOn { get; private set; }
 
         // events
         public event EventHandler<ItemClickEventArgs> ItemClick;
 
-        // constructor
-        public NewsRecyclerAdapter(Context context, RecyclerView recyclerView, List<Post> posts)
-        {
-            this.context = context;
-            RecyclerView = recyclerView;
+        public event EventHandler Loading;
+        public event EventHandler Loaded;
 
-            PostList = posts;
+        public event EventHandler Error;
+        public event EventHandler ConnectionError;
+        public event EventHandler NoData;
+
+        // events wrapper methods
+        protected void OnLoading()
+        {
+            Loading?.Invoke(this, EventArgs.Empty);
+        }
+        protected void OnLoaded()
+        {
+            Loaded?.Invoke(this, EventArgs.Empty);
+        }
+        protected void OnError()
+        {
+            Error?.Invoke(this, EventArgs.Empty);
+        }
+        protected void OnConnectionError()
+        {
+            ConnectionError?.Invoke(this, EventArgs.Empty);
+        }
+        protected void OnNoData()
+        {
+            NoData?.Invoke(this, EventArgs.Empty);
         }
 
-        // another constructor
-        public NewsRecyclerAdapter(Context context, RecyclerView recyclerView)
+        // constructor
+        public NewsRecyclerAdapter(Context context)
         {
             this.context = context;
-            RecyclerView = recyclerView;
 
             PostList = new List<Post>();
+
+            Category = CNHCategory.Latest;
+
+            SearchKeyword = "";
+
+            CanLoadMore = true;
         }
 
+        public async Task FetchNews(CNHCategory category)
+        {
+            // clear posts in case category is changed
+            if (category != Category)
+            {
+                ClearItems();
+            }
+
+            IsLoading = true;
+            OnLoading();
+
+            WordPressManager.PostRequest postRequest = new WordPressManager.PostRequest();
+            postRequest
+                .Embeded()
+                .Category(category)
+                .Quantity(10)
+                .Search(SearchKeyword)
+                .Save(!IsSearchOn)
+                .Update(IsSearchOn);
+            var postsData = await WordpressExtension.GetPosts(postRequest);
+
+            switch (postsData.Result)
+            {
+                case TaskResult.Error:
+                    OnError();
+                    break;
+                case TaskResult.NoInternet:
+                    OnConnectionError();
+                    break;
+                case TaskResult.NoData:
+                    OnNoData();
+                    break;
+                case TaskResult.Success:
+                    ReplaceItems(postsData.Data);
+                    break;
+                default:
+                    break;
+            }
+
+            Category = category;
+
+            IsLoading = false;
+            OnLoaded();
+
+            CanLoadMore = true;
+        }
+
+        public async Task RefreshNews()
+        {
+            IsLoading = true;
+            OnLoading();
+
+            WordPressManager.PostRequest postRequest = new WordPressManager.PostRequest();
+            postRequest
+                .Embeded()
+                .Category(Category)
+                .Quantity(10)
+                .Search(SearchKeyword)
+                .Update(true)
+                .Save(!IsSearchOn);
+
+            var postsData = await WordpressExtension.GetPosts(postRequest);
+
+            switch (postsData.Result)
+            {
+                case TaskResult.Error:
+                    OnError();
+                    break;
+                case TaskResult.NoInternet:
+                    OnConnectionError();
+                    break;
+                case TaskResult.NoData:
+                    OnNoData();
+                    break;
+                case TaskResult.Success:
+                    ReplaceItems(postsData.Data);
+                    break;
+                default:
+                    break;
+            }
+
+            IsLoading = false;
+            OnLoaded();
+
+            CanLoadMore = true;
+        }
+
+        public async Task LoadMore()
+        {
+            if (IsLoadingMore || !CanLoadMore)
+            {
+                return;
+            }
+
+            SetLoadingAnimation(true);
+
+            WordPressManager.PostRequest postRequest = new WordPressManager.PostRequest();
+            int indexSubstitution = IsLoadingMore ? 1 : 0;
+            postRequest
+                .Embeded()
+                .Category(Category)
+                .Quantity(10)
+                .Offset(ItemCount - indexSubstitution)
+                .Search(SearchKeyword)
+                .Save(!IsSearchOn)
+                .Update(IsSearchOn);
+
+            var postsData = await WordpressExtension.GetPosts(postRequest);
+
+            switch (postsData.Result)
+            {
+                case TaskResult.Error:
+                    OnError();
+                    break;
+                case TaskResult.NoInternet:
+                    OnConnectionError();
+                    break;
+                case TaskResult.NoData:
+                    CanLoadMore = false;
+                    break;
+                case TaskResult.Success:
+                    AddItems(postsData.Data);
+                    break;
+                default:
+                    break;
+            }
+
+            SetLoadingAnimation(false);
+        }
+
+        public async Task Search(string keyword)
+        {
+            SearchKeyword = keyword;
+
+            IsSearchOn = SearchKeyword != string.Empty;
+
+            await FetchNews(Category);
+        }
+
+        #region Items manipulation
         public void AddItems(List<Post> newItem)
         {
             SetLoadingAnimation(false);
@@ -74,40 +250,9 @@ namespace CNHSpotlight.Components
             PostList.AddRange(newItems);
 
             NotifyItemRangeInserted(0, newItems.Count);
-        }
+        } 
 
-        /// <summary>
-        /// Automatically called with 'false' before any items are added to the list.
-        /// <para>
-        /// But it is recommended to do that manually
-        /// </para>
-        /// </summary>
-        /// <param name="state"></param>
-        public void SetLoadingAnimation(bool state)
-        {
-            // turn on
-            if (state && !IsLoadingShown)
-            {
-                PostList.Add(new DummyLoadingPost());
-
-                NotifyItemInserted(PostList.Count - 1);
-
-                IsLoadingShown = true;
-            }
-            else
-            {
-                if (IsLoadingShown)
-                {
-                    PostList.RemoveAt(PostList.Count - 1);
-
-                    NotifyItemRemoved(PostList.Count);
-
-                    IsLoadingShown = false;
-                }
-            }
-        }
-
-        public Post GetItem(int position)
+        public Post GetPost(int position)
         {
             if (position < PostList.Count)
             {
@@ -116,6 +261,38 @@ namespace CNHSpotlight.Components
             else
             {
                 return null;
+            }
+        }
+        #endregion
+
+        /// <summary>
+        /// Automatically called with 'false' before any items are added to the list.
+        /// <para>
+        /// But it is recommended to do that manually
+        /// </para>
+        /// </summary>
+        /// <param name="state"></param>
+        void SetLoadingAnimation(bool state)
+        {
+            // turn on
+            if (state && !IsLoadingMore)
+            {
+                PostList.Add(new DummyLoadingPost());
+
+                NotifyItemInserted(PostList.Count - 1);
+
+                IsLoadingMore = true;
+            }
+            else
+            {
+                if (IsLoadingMore)
+                {
+                    PostList.RemoveAt(PostList.Count - 1);
+
+                    NotifyItemRemoved(PostList.Count);
+
+                    IsLoadingMore = false;
+                }
             }
         }
 
@@ -130,7 +307,7 @@ namespace CNHSpotlight.Components
 
         public override int GetItemViewType(int position)
         {
-            Post post = GetItem(position);
+            Post post = GetPost(position);
 
             if (post.GetType() == typeof(Post))
             {
@@ -154,7 +331,7 @@ namespace CNHSpotlight.Components
                         LayoutInflater.FromContext(context).Inflate(Resource.Layout.PostCardViewItem, parent, false);
 
                     RecyclerViewHolder newHolder = new RecyclerViewHolder(newsItemView);
-                    newHolder.ItemClick += OnItemClick;
+                    newHolder.ItemClick += (o, e) => OnItemClick(e);
 
                     return newHolder;
                 case ViewType.DummyLoadingPost:
@@ -176,7 +353,7 @@ namespace CNHSpotlight.Components
                 return;
             }
 
-            Post currentPost = GetItem(position);
+            Post currentPost = GetPost(position);
 
             RecyclerViewHolder currentViewHolder = (RecyclerViewHolder)holder;
 
@@ -216,7 +393,7 @@ namespace CNHSpotlight.Components
 
         public ImageView ThumbnailImage { get; private set; }
 
-        public event Action<int> ItemClick;
+        public event EventHandler<int> ItemClick;
 
         public RecyclerViewHolder(View view) : base(view)
         {
@@ -228,7 +405,7 @@ namespace CNHSpotlight.Components
 
 
             // hook click event
-            Cardview.Click += (o, e) => { ItemClick?.Invoke(AdapterPosition); };
+            Cardview.Click += (o, e) => { ItemClick?.Invoke(this, AdapterPosition); };
         }
     }
 

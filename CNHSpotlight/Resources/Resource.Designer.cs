@@ -2110,22 +2110,25 @@ namespace CNHSpotlight
 			public const int ic_public_white_24dp = 2130837603;
 			
 			// aapt resource value: 0x7f020064
-			public const int ic_subtitles_white_24dp = 2130837604;
+			public const int ic_search_white_24dp = 2130837604;
 			
 			// aapt resource value: 0x7f020065
-			public const int Icon = 2130837605;
+			public const int ic_subtitles_white_24dp = 2130837605;
 			
 			// aapt resource value: 0x7f020066
-			public const int navigation_empty_icon = 2130837606;
-			
-			// aapt resource value: 0x7f020069
-			public const int notification_template_icon_bg = 2130837609;
+			public const int Icon = 2130837606;
 			
 			// aapt resource value: 0x7f020067
-			public const int placeholder = 2130837607;
+			public const int navigation_empty_icon = 2130837607;
+			
+			// aapt resource value: 0x7f02006a
+			public const int notification_template_icon_bg = 2130837610;
 			
 			// aapt resource value: 0x7f020068
-			public const int placeholder_error = 2130837608;
+			public const int placeholder = 2130837608;
+			
+			// aapt resource value: 0x7f020069
+			public const int placeholder_error = 2130837609;
 			
 			static Drawable()
 			{
@@ -2605,6 +2608,9 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f06004b
 			public const int title_template = 2131099723;
 			
+			// aapt resource value: 0x7f0600a3
+			public const int toolbar_menu_item_searchview = 2131099811;
+			
 			// aapt resource value: 0x7f060025
 			public const int top = 2131099685;
 			
@@ -2875,6 +2881,9 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f0c0001
 			public const int navigation_menu = 2131492865;
 			
+			// aapt resource value: 0x7f0c0002
+			public const int toolbar_menu = 2131492866;
+			
 			static Menu()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -3055,6 +3064,9 @@ namespace CNHSpotlight
 			
 			// aapt resource value: 0x7f090014
 			public const int status_bar_notification_info_overflow = 2131296276;
+			
+			// aapt resource value: 0x7f090038
+			public const int toolbar_menu_item_action_search = 2131296312;
 			
 			static String()
 			{

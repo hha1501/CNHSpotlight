@@ -19,34 +19,29 @@ namespace CNHSpotlight.WordPress
 {
     static class WordpressExtension
     {
-        public static async Task<ModelWrapper<List<Post>>> GetPosts(CNHCategory category, int index, int count)
+        public static async Task<ModelWrapper<List<Post>>> GetPosts(WordPressManager.PostRequest postRequest)
         {
-            // offline
-            var postsOffline = DataManager.GetPostsOffline(category, index, count);
-
-            switch (postsOffline.Result)
+            if (!postRequest.UpdateRequired)
             {
-                case TaskResult.NoData:
-                    // online
-                    var postsOnline = await WordPressManager.GetPostsOnline(category, count, 1, index);
+                // try to get offline posts
+                var postsOffline = DataManager.GetPostsOffline(postRequest.CurrentCategory, postRequest.CurrentOffset, postRequest.CurrentQuantity);
 
-                    switch (postsOnline.Result)
-                    {
-                        case TaskResult.Error:
-                            return new ModelWrapper<List<Post>>(TaskResult.Error);
-                        case TaskResult.NoInternet:
-                            return new ModelWrapper<List<Post>>(TaskResult.NoInternet);
-                        case TaskResult.Success:
-                            return new ModelWrapper<List<Post>>(postsOnline.Data, TaskResult.Success);
-                        case TaskResult.NoData:
-                        default:
-                            return new ModelWrapper<List<Post>>(TaskResult.NoData);
-                    }
-                case TaskResult.Success:
-                    return new ModelWrapper<List<Post>>(postsOffline.Data, TaskResult.Success);
-                default:
-                    return new ModelWrapper<List<Post>>(TaskResult.NoData);
+                // if offline posts does not exist, get post online
+                if (postsOffline.Result == TaskResult.NoData)
+                {
+                    // online
+                    var postsOnline = await WordPressManager.GetPostsOnline(postRequest);
+                    return postsOnline;
+                }
+
+                return postsOffline;
             }
+            else
+            {
+                var postsOffline = await WordPressManager.GetPostsOnline(postRequest);
+                return postsOffline;
+            }
+
         }
     }
 }

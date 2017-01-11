@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 using Android.OS;
@@ -21,18 +22,6 @@ namespace CNHSpotlight
 
         RecyclerView recyclerView;
 
-        // current category
-        CNHCategory currentCategory { get; set; }
-
-        // bool for refreshing indication
-        bool IsRefreshing;
-
-        // bool for loading more indication
-        bool IsLoadingMore;
-
-        // bool for loading more capability
-        bool canLoadMore = true;
-
         // Endless scrolling listener
         RecyclerViewEndlessScrollListener endlessScrollListener;
 
@@ -44,16 +33,12 @@ namespace CNHSpotlight
             base.OnCreate(savedInstanceState);
 
             HasOptionsMenu = true;
-
-            currentCategory = CNHCategory.Latest;
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             // swipe refresh layout
             swipeRefreshLayout = (SwipeRefreshLayout)inflater.Inflate(Resource.Layout.NewsFragment, container, false);
-            // fetch news with default category: News
-            swipeRefreshLayout.Refresh += async (o, e) => await FetchLatestNews(currentCategory);
 
             // recycler view & setup
             recyclerView = swipeRefreshLayout.FindViewById<RecyclerView>(Resource.Id.newsfragment_recyclerview);
@@ -61,57 +46,77 @@ namespace CNHSpotlight
             recyclerView.SetLayoutManager(linearLayoutManager);
 
             // prepare adapter (an empty one)
-            currentAdapter = new NewsRecyclerAdapter(Activity, recyclerView);
+            currentAdapter = new NewsRecyclerAdapter(Activity);
             currentAdapter.ItemClick += (o, e) => NewsClick(e.ItemPosition);
+            currentAdapter.Error += OnError;
+            currentAdapter.ConnectionError += OnConnectionError;
+            currentAdapter.NoData += OnNoData;
+            currentAdapter.Loading += OnLoading;
+            currentAdapter.Loaded += OnLoaded;
+
 
             recyclerView.SetAdapter(currentAdapter);
 
             // apply scroll listener to recyclerview
             endlessScrollListener = new RecyclerViewEndlessScrollListener(linearLayoutManager, currentAdapter);
-            endlessScrollListener.OnThresholdReached += async (int count) => await OnRequireLoadMore(count);
+            endlessScrollListener.ThresholdReached += async (o, e) => await currentAdapter.LoadMore();
+            endlessScrollListener.Scroll += HandleScroll;
 
             recyclerView.AddOnScrollListener(endlessScrollListener);
+
+            // swipe refresh layout events setup
+            swipeRefreshLayout.Refresh += async (o, e) => await currentAdapter.RefreshNews();
 
             return swipeRefreshLayout;
         }
 
-        private async Task OnRequireLoadMore(int scrolledItemCount)
+        public async Task FetchNews(CNHCategory category)
         {
-            if (canLoadMore && !IsLoadingMore)
+            await currentAdapter.FetchNews(category);
+        }
+
+        public async Task Search(string keyword)
+        {
+            await currentAdapter.Search(keyword);
+        }
+
+        private void OnLoaded(object sender, EventArgs e)
+        {
+            swipeRefreshLayout.Refreshing = false;
+        }
+
+        private void OnLoading(object sender, EventArgs e)
+        {
+            swipeRefreshLayout.Refreshing = true;
+        }
+
+        private void OnNoData(object sender, EventArgs e)
+        {
+            Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
+        }
+
+        private void OnConnectionError(object sender, EventArgs e)
+        {
+            Snackbar.Make(swipeRefreshLayout, "No connection", Snackbar.LengthLong).Show();
+        }
+
+        private void OnError(object sender, EventArgs e)
+        {
+            Snackbar.Make(swipeRefreshLayout, "Error occured", Snackbar.LengthShort).Show();
+        }
+
+        private void HandleScroll(object sender, RecyclerViewEndlessScrollListener.ScrollEventArgs e)
+        {
+            if (e.IsOnTop)
             {
-                IsLoadingMore = true;
-                currentAdapter.SetLoadingAnimation(true);
-
-                var posts = await WordpressExtension.GetPosts(currentCategory, scrolledItemCount, 10);
-
-                switch (posts.Result)
+                swipeRefreshLayout.SetEnabled(true);
+            }
+            else
+            {
+                if (!swipeRefreshLayout.Refreshing)
                 {
-                    case TaskResult.Error:
-                        Snackbar.Make(swipeRefreshLayout, "Error occured", Snackbar.LengthShort).Show();
-                        break;
-                    case TaskResult.NoInternet:
-                        Snackbar
-                            .Make(swipeRefreshLayout, "No connection", Snackbar.LengthLong)
-                            .SetAction("Retry", async (view) =>
-                            {
-                                await OnRequireLoadMore(scrolledItemCount);
-                            })
-                            .Show();
-                        break;
-                    case TaskResult.NoData:
-                        canLoadMore = false;
-                        break;
-                    case TaskResult.Success:
-                        // add posts
-                        currentAdapter.AddItems(posts.Data);
-
-                        break;
-                    default:
-                        break;
+                    swipeRefreshLayout.SetEnabled(false);
                 }
-
-                IsLoadingMore = false;
-                currentAdapter.SetLoadingAnimation(false);
             }
         }
 
@@ -119,19 +124,19 @@ namespace CNHSpotlight
         {
             base.OnResume();
 
-            if (recyclerView.GetAdapter() == null || recyclerView.GetAdapter().ItemCount <= 0)
+            if (currentAdapter.PostList.Count <= 0)
             {
-                await FetchNews(currentCategory);
+                await currentAdapter.FetchNews(currentAdapter.Category); 
             }
         }
 
         private void NewsClick(int position)
         {
-            if (!IsRefreshing)
+            if (!currentAdapter.IsLoading)
             {
 
                 // get post
-                Post post = currentAdapter.GetItem(position);
+                Post post = currentAdapter.GetPost(position);
 
                 if (post == null)
                 {
@@ -143,115 +148,6 @@ namespace CNHSpotlight
 
                 hostActivity.ReadNews(post); 
             }
-        }
-
-        public async Task FetchNews(CNHCategory category)
-        {
-            // only refresh when idle
-            if (IsRefreshing)
-            {
-                return;
-            }
-
-            // update state
-            IsRefreshing = true;
-
-            // start refreshing animation
-            swipeRefreshLayout.Refreshing = true;
-
-            // try to get posts
-            var posts = await WordpressExtension.GetPosts(category, 0, 10);
-
-
-            switch (posts.Result)
-            {
-                case TaskResult.Success:
-                    currentAdapter.ReplaceItems(posts.Data);
-                    break;
-
-                case TaskResult.NoInternet:
-                    Snackbar
-                        .Make(swipeRefreshLayout, "No internet connection", Snackbar.LengthLong)
-                        .SetAction("Retry", async (view) =>
-                        {
-                            await FetchLatestNews(currentCategory);
-                        })
-                        .Show();
-                    break;
-
-                case TaskResult.NoData:
-                    Snackbar.Make(swipeRefreshLayout, "No data", Snackbar.LengthShort).Show();
-                    break;
-
-                case TaskResult.Error:
-                    Snackbar.Make(swipeRefreshLayout, "Error occured", Snackbar.LengthShort).Show();
-                    break;
-
-                default:
-                    break;
-            }
-
-            // update state
-            IsRefreshing = false;
-            currentCategory = category;
-
-            // stop refreshing animation
-            swipeRefreshLayout.Refreshing = false;
-
-            // reset load more state
-            canLoadMore = true;
-
-
-        }
-
-        public async Task FetchLatestNews(CNHCategory category)
-        {
-            // only refresh when idle
-            if (IsRefreshing)
-            {
-                return;
-            }
-
-
-            swipeRefreshLayout.Refreshing = true;
-            IsRefreshing = true;
-
-            var posts = await WordPressManager.GetPostsOnline(category, 10);
-
-            switch (posts.Result)
-            {
-                case TaskResult.Error:
-                    Snackbar.Make(swipeRefreshLayout, "Error occured", Snackbar.LengthShort).Show();
-                    break;
-
-                case TaskResult.NoInternet:
-                    Snackbar
-                        .Make(swipeRefreshLayout, "No internet connection", Snackbar.LengthLong)
-                        .SetAction("Retry", async (view) =>
-                        {
-                            await FetchLatestNews(currentCategory);
-                        })
-                        .Show();
-                    break;
-
-                case TaskResult.Success:
-                    currentAdapter.ReplaceItems(posts.Data);
-                    break;
-
-                default:
-                    break;
-            }
-
-
-            // set current category
-            currentCategory = category;
-
-            // stop refreshing animation
-            swipeRefreshLayout.Refreshing = false;
-            IsRefreshing = false;
-
-            // reset load more state
-            canLoadMore = true;
         }
     }
 }

@@ -11,6 +11,9 @@ using Android.Views;
 using Android.Widget;
 using Android.Support.V7.Widget;
 
+using Android.Util;
+
+
 using CNHSpotlight.Components;
 
 namespace CNHSpotlight
@@ -18,9 +21,11 @@ namespace CNHSpotlight
     class RecyclerViewEndlessScrollListener : RecyclerView.OnScrollListener
     {
         /// <summary>
-        /// Triggered when scroll to threshold, providing the number of current items
+        /// Triggered when scroll to threshold
         /// </summary>
-        public event Action<int> OnThresholdReached;
+        public event EventHandler ThresholdReached;
+
+        public event EventHandler<ScrollEventArgs> Scroll;
 
         public int TotalItemCount { get; private set; }
 
@@ -56,14 +61,15 @@ namespace CNHSpotlight
                 // as the number of items passed equals to LastVisibleItemPosition + 1
                 PassedItemCount = LastVisibleItemPosition + 1;
 
-                int dummyLoadingItemSubstitution = RecyclerViewAdapter.IsLoadingShown ? 1 : 0;
+                // Check the presence of loading item
+                int indexSubstitution = RecyclerViewAdapter.IsLoadingMore ? 1 : 0;
 
                 // reach threshold
-                if (PassedItemCount + TriggerThreshold >= TotalItemCount)
+                if (PassedItemCount + TriggerThreshold == (TotalItemCount - indexSubstitution))
                 {
                     if (!triggerLock)
                     {
-                        OnThresholdReached?.Invoke(RecyclerViewAdapter.ItemCount - dummyLoadingItemSubstitution);
+                        ThresholdReached?.Invoke(this, EventArgs.Empty);
 
                         triggerLock = true; 
                     }
@@ -74,6 +80,21 @@ namespace CNHSpotlight
                 }
 
             }
+
+            bool isOnTop = LayoutManager.FindFirstCompletelyVisibleItemPosition() == 0 || TotalItemCount == 0;
+            Log.Debug("***********", isOnTop.ToString());
+            Scroll?.Invoke(this, new ScrollEventArgs(isOnTop));
         }
+     
+        public class ScrollEventArgs : EventArgs
+        {
+            public bool IsOnTop { get; private set; }
+
+            public ScrollEventArgs(bool isOnTop)
+            {
+                IsOnTop = isOnTop;
+            }
+        }
+
     }
 }

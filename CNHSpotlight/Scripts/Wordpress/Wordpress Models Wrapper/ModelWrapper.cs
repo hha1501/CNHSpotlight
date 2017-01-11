@@ -20,7 +20,7 @@ namespace CNHSpotlight.WordPress
     /// </para>
     /// </summary>
     /// <typeparam name="T">Wordpress model needs to be wrapped</typeparam>
-    class ModelWrapper<T>
+    public class ModelWrapper<T>
     {
         public T Data { get; private set; }
         public TaskResult Result { get; private set; }

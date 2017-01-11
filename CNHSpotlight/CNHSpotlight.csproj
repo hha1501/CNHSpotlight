@@ -144,6 +144,7 @@
     <Compile Include="Scripts\DataManager\DataManager.cs" />
     <Compile Include="Scripts\Html Reader\HtmlFormatter.cs" />
     <Compile Include="Scripts\News RecyclerView Adapter\NewsRecyclerAdapter.cs" />
+    <Compile Include="Scripts\SearchView Expand Listener\SearchViewActionExpandListener.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Interface\WordpressExtension.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Models Wrapper\ModelWrapper.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Interface\WordPressManager.cs" />
@@ -280,6 +281,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_grade_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\toolbar_menu.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_search_white_24dp.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets')" />

@@ -20,4 +20,7 @@
 
     <string name="actionbardrawertoggle_description_open">"Open"</string>
     <string name="actionbardrawertoggle_description_close">"Close"</string>
+
+
+    <string name="toolbar_menu_item_action_search">"Search"</string>
 </resources>

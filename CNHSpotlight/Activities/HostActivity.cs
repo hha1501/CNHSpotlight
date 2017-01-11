@@ -11,7 +11,10 @@ using Android.Content;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Support.V4.Widget;
+using Android.Views.InputMethods;
+using Android.Support.V4.View;
 
+using SearchView = Android.Support.V7.Widget.SearchView;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 using Newtonsoft.Json;
@@ -29,6 +32,7 @@ namespace CNHSpotlight
         DrawerLayout drawerLayout;
 
         Toolbar toolbar;
+        SearchView searchView;
 
         FrameLayout fragmentView;
 
@@ -140,6 +144,9 @@ namespace CNHSpotlight
             drawerLayout.CloseDrawer(navigationView);
             switch (e.MenuItem.ItemId)
             {
+                case Resource.Id.navigation_menu_item_latest:
+                    await FetchNews(CNHCategory.Latest);
+                    break;
                 case Resource.Id.navigation_menu_item_news:
                     await FetchNews(CNHCategory.News);
                     break;
@@ -178,6 +185,42 @@ namespace CNHSpotlight
             }
         }
 
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.toolbar_menu, menu);
+
+            IMenuItem searchItem = menu.FindItem(Resource.Id.toolbar_menu_item_searchview);
+
+            searchView = (SearchView)searchItem.ActionView;
+            searchView.SubmitButtonEnabled = true;
+            searchView.QueryTextSubmit += async (o, e) =>
+            {
+
+                // clear focus close and keyboard
+                View focusedView = CurrentFocus;
+
+                if (focusedView != null)
+                {
+                    InputMethodManager.FromContext(this).HideSoftInputFromWindow(focusedView.WindowToken, HideSoftInputFlags.None); 
+                    focusedView.ClearFocus();
+                }
+
+                e.Handled = true;
+
+                await newsFragment.Search(e.Query);
+            };
+
+            SearchViewActionExpandListener expandListener = new SearchViewActionExpandListener();
+            expandListener.Collapse += async (o, e) =>
+            {
+                await newsFragment.Search("");
+            };
+
+            MenuItemCompat.SetOnActionExpandListener(searchItem, expandListener);
+            
+
+            return base.OnCreateOptionsMenu(menu);
+        }
     }
 }
 

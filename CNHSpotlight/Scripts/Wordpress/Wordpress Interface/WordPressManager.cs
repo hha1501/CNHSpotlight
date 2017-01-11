@@ -25,56 +25,8 @@ namespace CNHSpotlight.WordPress
     /// <summary>
     /// Interface for pulling data from WordPress site
     /// </summary>
-    static class WordPressManager
+    public static class WordPressManager
     {
-        static readonly string BaseUrl;
-        static readonly string PostUrl;
-        static readonly string UserUrl;
-
-        static readonly int MaxUserCount;
-
-        static WordPressManager()
-        {
-            BaseUrl = "https://chuyennguyenhue.com/wp-json/wp/v2/";
-            PostUrl = string.Format("{0}posts/", BaseUrl);
-            UserUrl = string.Format("{0}users/", BaseUrl);
-
-            MaxUserCount = 100;
-        }
-
-        #region Urls
-        static Uri GetPostQueryUrl(CNHCategory category, int numberOfPosts = 10, int page = 1, int offset = 0)
-        {
-            QueryUrlBuilder uriBuilder = new QueryUrlBuilder(PostUrl);
-            uriBuilder
-                .AddQueryParam("per_page", numberOfPosts)
-                .AddQueryParam("page", page)
-                .AddQueryParam("offset", offset)
-                .AddQueryParam("_embed", null);
-
-            // we have to handle category specially
-            if (category != CNHCategory.Latest)
-            {
-                uriBuilder.AddQueryParam("categories", (int)category);
-            }
-
-            return uriBuilder.Build();
-
-        }
-        static string GetUsersQueryUrl()
-        {
-            UriBuilder uriBuilder = new UriBuilder(UserUrl);
-
-            // prepare query string
-            string queryString = string.Format("per_page={0}", MaxUserCount);
-
-            uriBuilder.Query = queryString;
-
-            return uriBuilder.Uri.ToString();
-        }
-
-        #endregion
-
 
         /// <summary>
         /// Implemeted only online lookup
@@ -83,7 +35,7 @@ namespace CNHSpotlight.WordPress
         /// <param name="numberOfPosts"></param>
         /// <param name="page"></param>
         /// <returns></returns>
-        public static async Task<ModelWrapper<List<Post>>> GetPostsOnline(CNHCategory category, int numberOfPosts = 10, int page = 1, int offset = 0)
+        public static async Task<ModelWrapper<List<Post>>> GetPostsOnline(PostRequest postRequest)
         {
             // check internet connection
             if (!ConnectionInfo.InternetConnected())
@@ -97,15 +49,17 @@ namespace CNHSpotlight.WordPress
                 using (HttpClient httpClient = new HttpClient())
                 {
                     
-                    string postsData = await httpClient.GetStringAsync(GetPostQueryUrl(category, numberOfPosts, page, offset));
+                    string postsData = await httpClient.GetStringAsync(postRequest.GetUri());
 
                     List<Post> tempList = JsonConvert.DeserializeObject<List<Post>>(postsData);
 
                     if (tempList != null && tempList.Count > 0)
                     {
-
-                        // successfully retrieve posts, so save them
-                        DataManager.SavePosts(tempList, category, offset);
+                        if (postRequest.SaveRequired)
+                        {
+                            // successfully retrieve posts, so save them
+                            DataManager.SavePosts(tempList, postRequest.CurrentCategory, postRequest.CurrentOffset); 
+                        }
 
                         return new ModelWrapper<List<Post>>(tempList, TaskResult.Success);
                     }
@@ -122,7 +76,7 @@ namespace CNHSpotlight.WordPress
 
         }
 
-        public static async Task<ModelWrapper<List<User>>> GetUsersOnline()
+        public static async Task<ModelWrapper<List<User>>> GetUsersOnline(UserRequest userRequest)
         {
             // check internet connection
             if (!ConnectionInfo.InternetConnected())
@@ -135,7 +89,7 @@ namespace CNHSpotlight.WordPress
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    string usersData = await httpClient.GetStringAsync(GetUsersQueryUrl());
+                    string usersData = await httpClient.GetStringAsync(userRequest.GetUri());
 
                     List<User> tempList = JsonConvert.DeserializeObject<List<User>>(usersData);
 
@@ -159,22 +113,126 @@ namespace CNHSpotlight.WordPress
             }
         }
 
-        class QueryUrlBuilder
+        // TODO: Apply new uri system into implementation
+        public class PostRequest : ModelRequest
         {
-            UriBuilder uriBuilder;
-            Dictionary<string, object> queryParams;
-
-            public QueryUrlBuilder(string baseUrl)
+            public PostRequest()
             {
-                uriBuilder = new UriBuilder(baseUrl);
-                queryParams = new Dictionary<string, object>();
+                BaseUrl = PostUrl;
             }
 
-            public QueryUrlBuilder AddQueryParam(string key, object data)
+            public CNHCategory CurrentCategory { get; private set; }
+
+            public int CurrentOffset { get; private set; }
+
+            public int CurrentQuantity { get; private set; }
+
+
+            public bool UpdateRequired { get; private set; }
+
+            public bool SaveRequired { get; private set; }
+
+
+            public PostRequest Category(CNHCategory category)
+            {
+                if (category != CNHCategory.Latest)
+                {
+                    AddParam("categories", (int)category); 
+                }
+                CurrentCategory = category;
+                return this;
+            }
+
+            public PostRequest Page(int page)
+            {
+                AddParam("page", page);
+
+                return this;
+            }
+
+            public PostRequest Quantity(int numberOfPosts)
+            {
+                AddParam("per_page", numberOfPosts);
+                CurrentQuantity = numberOfPosts;
+                return this;
+            }
+
+            public PostRequest Offset(int offset)
+            {
+                AddParam("offset", offset);
+                CurrentOffset = offset;
+
+                return this;
+            }
+
+            public PostRequest Search(string keyword)
+            {
+                AddParam("search", keyword);
+
+                return this;
+            }
+
+            public PostRequest Embeded()
+            {
+                AddParam("_embed", null);
+
+                return this;
+            }
+
+            public PostRequest Update(bool update)
+            {
+                UpdateRequired = update;
+
+                return this;
+            }
+
+            public PostRequest Save(bool save)
+            {
+                SaveRequired = save;
+
+                return this;
+            }
+        }
+
+        public class UserRequest : ModelRequest
+        {
+            public UserRequest()
+            {
+                BaseUrl = UserUrl;
+            }
+
+            public UserRequest Quantity(int numberOfUsers)
+            {
+                AddParam("per_page", numberOfUsers);
+
+                return this;
+            }
+        }
+
+        /// <summary>
+        /// Base class for implementing any model's parameters
+        /// </summary>
+        public class ModelRequest
+        {
+            public static readonly string PostUrl = "https://chuyennguyenhue.com/wp-json/wp/v2/posts";
+            public static readonly string UserUrl = "https://chuyennguyenhue.com/wp-json/wp/v2/users";
+
+            public static readonly int MaxUserCount = 100;
+
+            public string BaseUrl { get; protected set; }
+
+            protected Dictionary<string, object> ParamsList { get; set; }
+
+            protected ModelRequest()
+            {
+                ParamsList = new Dictionary<string, object>();
+            }
+
+            protected virtual ModelRequest AddParam(string key, object value)
             {
                 try
                 {
-                    queryParams.Add(key, data);
+                    ParamsList.Add(key, value);
                 }
                 catch (ArgumentException)
                 {
@@ -184,26 +242,27 @@ namespace CNHSpotlight.WordPress
                 return this;
             }
 
-            public Uri Build()
+            protected virtual string GetQueryString()
             {
-                uriBuilder.Query = GetQueryString();
-
-                return uriBuilder.Uri;
-            }
-
-            private string GetQueryString()
-            {
-                IEnumerable<string> queryCollection = queryParams
-                    .Select(query =>
+                IEnumerable<string> queryCollection = ParamsList
+                    .Select(queryItem =>
                     {
-                        return (query.Value != null) ?
-                        string.Format("{0}={1}", query.Key, query.Value) : query.Key;
+                        return (queryItem.Value != null) ?
+                        string.Format("{0}={1}", queryItem.Key, queryItem.Value) : queryItem.Key;
                     });
 
                 return string.Join("&", queryCollection);
             }
-        }
 
+            public Uri GetUri()
+            {
+                UriBuilder uriBuilder = new UriBuilder(BaseUrl);
+
+                uriBuilder.Query = GetQueryString();
+
+                return uriBuilder.Uri;
+            }
+        }
     }
 
     public enum CNHCategory

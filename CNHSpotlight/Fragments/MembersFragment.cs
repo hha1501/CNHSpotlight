@@ -61,7 +61,10 @@ namespace CNHSpotlight
             switch (usersOffline.Result)
             {
                 case TaskResult.NoData:
-                    var usersOnline = await WordPressManager.GetUsersOnline();
+                    WordPressManager.UserRequest userRequest = new WordPressManager.UserRequest();
+                    userRequest.Quantity(WordPressManager.ModelRequest.MaxUserCount);
+
+                    var usersOnline = await WordPressManager.GetUsersOnline(userRequest);
                     switch (usersOnline.Result)
                     {
                         case TaskResult.Error:
