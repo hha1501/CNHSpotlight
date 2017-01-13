@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 using Android.App;
 using Android.Content;
@@ -20,6 +21,7 @@ using Newtonsoft.Json;
 using CNHSpotlight.WordPress;
 using CNHSpotlight.WordPress.Models;
 
+
 namespace CNHSpotlight
 {
     /// <summary>
@@ -27,46 +29,13 @@ namespace CNHSpotlight
     /// </summary>
     static class DataManager
     {
-        #region Generic image I/O
-        static Bitmap GetImageOffline(string imageFilePath)
-        {
-            Bitmap bitmap = null;
-
-            if (File.Exists(imageFilePath))
-            {
-                using (StreamReader streamReader = new StreamReader(imageFilePath))
-                {
-                    bitmap =
-                        BitmapFactory.DecodeStream(streamReader.BaseStream);
-                }
-            }
-
-            return bitmap;
-        }
-
-        static void SaveImageOffline(Bitmap data, string imagePath, string imageName)
-        {
-
-            if (!Directory.Exists(imagePath))
-            {
-                Directory.CreateDirectory(imagePath);
-            }
-
-            string imageFilePath = Path.Combine(imagePath, imageName);
-
-            using (StreamWriter streamWriter = new StreamWriter(imageFilePath))
-            {
-                data.Compress(Bitmap.CompressFormat.Jpeg, 95, streamWriter.BaseStream);
-            }
-        }
-        #endregion
 
         #region Posts
         public static void SavePosts(List<Post> data, CNHCategory category, int index)
         {
             List<Post> finalPostList = new List<Post>();
 
-            var posts = GetPostsOffline(category);
+            var posts = GetAllPostsOffline(new WordPressManager.PostRequest().Category(category));
 
             // try to get saved postList if it exists
             if (posts.Result == TaskResult.Success)
@@ -110,11 +79,11 @@ namespace CNHSpotlight
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        public static ModelWrapper<List<Post>> GetPostsOffline(CNHCategory category)
+        public static ModelWrapper<List<Post>> GetAllPostsOffline(WordPressManager.PostRequest postRequest)
         {
             List<Post> postsList = new List<Post>();
 
-            string filePath = GetPostFilePath(category);
+            string filePath = GetPostFilePath(postRequest.CurrentCategory);
 
             if (File.Exists(filePath))
             {
@@ -140,27 +109,39 @@ namespace CNHSpotlight
         /// <param name="index"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        public static ModelWrapper<List<Post>> GetPostsOffline(CNHCategory category, int index, int count)
+        public static ModelWrapper<List<Post>> GetPostsOffline(WordPressManager.PostRequest postRequest)
         {
-            List<Post> postsList = new List<Post>();
 
-            string filePath = GetPostFilePath(category);
+            var allPosts = GetAllPostsOffline(postRequest);
 
-            if (File.Exists(filePath))
+            // there is some posts
+            if (allPosts.Result == TaskResult.Success)
             {
-                using (StreamReader streamReader = new StreamReader(filePath))
-                {
-                    postsList = JsonConvert.DeserializeObject<List<Post>>(streamReader.ReadToEnd());
 
-                    if (postsList != null && postsList.Count > 0)
-                    {
-                        int validCount = Math.Min(postsList.Count - index, count);
-                        if (validCount > 0)
-                        {
-                            return new ModelWrapper<List<Post>>(postsList.GetRange(index, validCount), TaskResult.Success); 
-                        }
-                    }
+                List<Post> queriedPostList = allPosts.Data;
+
+                // apply search
+                if (postRequest.CurrentSearch != string.Empty)
+                {
+                    CompareInfo compareInfo = CultureInfo.CurrentCulture.CompareInfo;
+
+                    queriedPostList = queriedPostList
+                        .Where(post =>
+                            compareInfo.IndexOf(post.Title.Rendered, postRequest.CurrentSearch, CompareOptions.IgnoreCase) >= 0 ||
+                            compareInfo.IndexOf(post.Content.Rendered, postRequest.CurrentSearch, CompareOptions.IgnoreCase) >= 0)
+                        .ToList();
                 }
+
+                // apply range
+                int validCount = Math.Min(queriedPostList.Count - postRequest.CurrentOffset, postRequest.CurrentQuantity);
+
+                if (validCount > 0)
+                {
+                    queriedPostList = queriedPostList.GetRange(postRequest.CurrentOffset, validCount);
+
+                    return new ModelWrapper<List<Post>>(queriedPostList, TaskResult.Success);
+                }
+
             }
 
             // at this point either postsList is empty or file does not exist

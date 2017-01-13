@@ -127,6 +127,8 @@ namespace CNHSpotlight.WordPress
 
             public int CurrentQuantity { get; private set; }
 
+            public string CurrentSearch { get; private set; }
+
 
             public bool UpdateRequired { get; private set; }
 
@@ -168,6 +170,7 @@ namespace CNHSpotlight.WordPress
             public PostRequest Search(string keyword)
             {
                 AddParam("search", keyword);
+                CurrentSearch = keyword;
 
                 return this;
             }

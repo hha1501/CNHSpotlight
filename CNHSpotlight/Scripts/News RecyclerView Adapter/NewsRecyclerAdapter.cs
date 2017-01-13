@@ -14,6 +14,7 @@ using Com.Bumptech.Glide.Load.Engine;
 
 using CNHSpotlight.WordPress.Models;
 using CNHSpotlight.WordPress;
+using CNHSpotlight.Scripts.ConnectionInfo;
 
 namespace CNHSpotlight.Components
 {
@@ -102,7 +103,7 @@ namespace CNHSpotlight.Components
                 .Quantity(10)
                 .Search(SearchKeyword)
                 .Save(!IsSearchOn)
-                .Update(IsSearchOn);
+                .Update(IsSearchOn && ConnectionInfo.InternetConnected());
             var postsData = await WordpressExtension.GetPosts(postRequest);
 
             switch (postsData.Result)
@@ -189,7 +190,7 @@ namespace CNHSpotlight.Components
                 .Offset(ItemCount - indexSubstitution)
                 .Search(SearchKeyword)
                 .Save(!IsSearchOn)
-                .Update(IsSearchOn);
+                .Update(IsSearchOn && ConnectionInfo.InternetConnected());
 
             var postsData = await WordpressExtension.GetPosts(postRequest);
 

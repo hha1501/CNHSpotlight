@@ -37,7 +37,7 @@ namespace CNHSpotlight.WordPress
         }
 
         /// <summary>
-        /// Construct an instance with only result ( usually used in error situation
+        /// Construct an instance with only result (usually used in error situation)
         /// </summary>
         /// <param name="result"></param>
         public ModelWrapper(TaskResult result)

@@ -24,7 +24,7 @@ namespace CNHSpotlight.WordPress
             if (!postRequest.UpdateRequired)
             {
                 // try to get offline posts
-                var postsOffline = DataManager.GetPostsOffline(postRequest.CurrentCategory, postRequest.CurrentOffset, postRequest.CurrentQuantity);
+                var postsOffline = DataManager.GetPostsOffline(postRequest);
 
                 // if offline posts does not exist, get post online
                 if (postsOffline.Result == TaskResult.NoData)
