@@ -5,9 +5,10 @@ using Newtonsoft.Json;
 
 namespace CNHSpotlight.WordPress.Models
 {
-    [DebuggerDisplay("Title = {Title.Rendered}")]
+    [DebuggerDisplay("Id = {Id}, Title = {Title.Rendered}")]
     public class Post
     {
+        #region Wordpress properties
         [JsonProperty("id")]
         public int Id { get; set; }
 
@@ -75,7 +76,8 @@ namespace CNHSpotlight.WordPress.Models
         public object[] Tags { get; set; }
 
         [JsonProperty("_embedded")]
-        public Embedded Embedded { get; set; }
+        public Embedded Embedded { get; set; } 
+        #endregion
     }
 
     public class Guid

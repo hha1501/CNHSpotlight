@@ -17,6 +17,7 @@ using HtmlAgilityPack;
 
 using CNHSpotlight.WordPress;
 using CNHSpotlight.WordPress.Models;
+using CNHSpotlight.Asset;
 
 namespace CNHSpotlight.HtmlParser
 {
@@ -32,7 +33,7 @@ namespace CNHSpotlight.HtmlParser
         {
             // inflate post-heading -- which contains Title and Author data
             HtmlDocument headingDoc = new HtmlDocument();
-            headingDoc.LoadHtml(GetAssetData("post-heading.html"));
+            headingDoc.LoadHtml(AssetUtils.CreatePostTemplate("post-heading.html"));
 
             // insert title
             headingDoc.GetElementbyId("title").InnerHtml = post.Title.Rendered;
@@ -50,10 +51,10 @@ namespace CNHSpotlight.HtmlParser
 
             // inflate post-template
             HtmlDocument templateDoc = new HtmlDocument();
-            templateDoc.LoadHtml(GetAssetData("post-template.html"));
+            templateDoc.LoadHtml(AssetUtils.CreatePostTemplate("post-template.html"));
 
             // add css
-            templateDoc.GetElementbyId("style").InnerHtml = GetAssetData("post-detail.css");
+            templateDoc.GetElementbyId("style").InnerHtml = AssetUtils.CreatePostTemplate("post-detail.css");
 
             // add heading
             templateDoc.GetElementbyId("heading").InnerHtml = headingDoc.DocumentNode.OuterHtml;
@@ -64,16 +65,6 @@ namespace CNHSpotlight.HtmlParser
             return templateDoc.DocumentNode.OuterHtml;
         }
 
-        static string GetAssetData(string filePath)
-        {
-            string data = string.Empty;
-            using (StreamReader streamReader = new StreamReader(Application.Context.Assets.Open(filePath)))
-            {
-                data = streamReader.ReadToEnd();
-            }
-
-            return data;
-        }
     }
 
 

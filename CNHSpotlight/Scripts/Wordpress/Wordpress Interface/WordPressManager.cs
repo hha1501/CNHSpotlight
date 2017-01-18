@@ -58,7 +58,7 @@ namespace CNHSpotlight.WordPress
                         if (postRequest.SaveRequired)
                         {
                             // successfully retrieve posts, so save them
-                            DataManager.SavePosts(tempList, postRequest.CurrentCategory, postRequest.CurrentOffset); 
+                            DataManager.SavePosts(tempList, postRequest.CurrentCategory); 
                         }
 
                         return new ModelWrapper<List<Post>>(tempList, TaskResult.Success);
@@ -113,7 +113,7 @@ namespace CNHSpotlight.WordPress
             }
         }
 
-        // TODO: Apply new uri system into implementation
+
         public class PostRequest : ModelRequest
         {
             public PostRequest()

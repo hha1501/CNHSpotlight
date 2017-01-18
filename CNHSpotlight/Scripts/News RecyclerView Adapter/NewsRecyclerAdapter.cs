@@ -15,6 +15,7 @@ using Com.Bumptech.Glide.Load.Engine;
 using CNHSpotlight.WordPress.Models;
 using CNHSpotlight.WordPress;
 using CNHSpotlight.Scripts.ConnectionInfo;
+using CNHSpotlight.Asset;
 
 namespace CNHSpotlight.Components
 {
@@ -369,7 +370,6 @@ namespace CNHSpotlight.Components
 
             Glide.With(context)
                 .Load(currentPost.Embedded.WpFeaturedMedia.FirstOrDefault().SourceUrl)
-                .DontTransform()
                 .DiskCacheStrategy(DiskCacheStrategy.All)
                 .Placeholder(Resource.Drawable.placeholder)
                 .Error(Resource.Drawable.placeholder_error)
@@ -401,6 +401,8 @@ namespace CNHSpotlight.Components
             Cardview = (CardView)view;
 
             Title = view.FindViewById<TextView>(Resource.Id.postcardviewitem_text_title);
+            Title.Typeface = AssetUtils.CustomFont;
+
             ThumbnailImage = view.FindViewById<ImageView>(Resource.Id.postcardviewitem_imageview_thumbnailimage);
             Author = view.FindViewById<TextView>(Resource.Id.postcardviewitem_text_author);
 

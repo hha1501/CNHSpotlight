@@ -139,10 +139,11 @@
     <Compile Include="Fragments\NewsFragment.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scripts\Asset Utils\AssetUtils.cs" />
     <Compile Include="Scripts\ConnectionInfo\ConnectionInfo.cs" />
     <Compile Include="Scripts\RecyclerView Endless Scroll\RecyclerViewEndlessScrollListener.cs" />
     <Compile Include="Scripts\DataManager\DataManager.cs" />
-    <Compile Include="Scripts\Html Reader\HtmlFormatter.cs" />
+    <Compile Include="Scripts\Html Formatter\HtmlFormatter.cs" />
     <Compile Include="Scripts\News RecyclerView Adapter\NewsRecyclerAdapter.cs" />
     <Compile Include="Scripts\SearchView Expand Listener\SearchViewActionExpandListener.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Interface\WordpressExtension.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Scripts\Wordpress\Wordpress Interface\WordPressManager.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Models\Post.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Models\User.cs" />
+    <Compile Include="Scripts\Wordpress\Wordpress Utils\WordpressUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\HostActivity.axml">
@@ -160,6 +162,7 @@
     <AndroidResource Include="Resources\drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\Fonts\Cabin-Bold.ttf" />
     <None Include="packages.config" />
     <None Include="Properties\AndroidManifest.xml" />
     <AndroidResource Include="Resources\layout\NewsFragment.axml">
@@ -255,7 +258,7 @@
     <AndroidResource Include="Resources\menu\about_menu.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\post-template.html" />
+    <AndroidAsset Include="Assets\Post Templates\post-template.html" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\values\navigationview_styles.xml">
@@ -269,10 +272,10 @@
     <AndroidResource Include="Resources\drawable\placeholder_error.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\post-detail.css" />
+    <AndroidAsset Include="Assets\Post Templates\post-detail.css" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\post-heading.html" />
+    <AndroidAsset Include="Assets\Post Templates\post-heading.html" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\color\navigationview_custom_color.xml">
@@ -288,6 +291,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_search_white_24dp.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 
 using CNHSpotlight.WordPress;
 using CNHSpotlight.WordPress.Models;
+using CNHSpotlight.WordPress.Utils;
 
 
 namespace CNHSpotlight
@@ -31,7 +32,7 @@ namespace CNHSpotlight
     {
 
         #region Posts
-        public static void SavePosts(List<Post> data, CNHCategory category, int index)
+        public static void SavePosts(List<Post> data, CNHCategory category)
         {
             List<Post> finalPostList = new List<Post>();
 
@@ -43,7 +44,7 @@ namespace CNHSpotlight
                 finalPostList = posts.Data;
             }
 
-            finalPostList.ReplaceItemRange(index, data);
+            finalPostList = finalPostList.ReplacePosts(data);
 
             using (StreamWriter streamWriter = new StreamWriter(GetPostFilePath(category)))
             {
@@ -244,5 +245,6 @@ namespace CNHSpotlight
             source.InsertRange(index, collection);
 
         }
+
     }
 }
