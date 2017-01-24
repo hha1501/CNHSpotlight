@@ -24,7 +24,7 @@ using CNHSpotlight.WordPress.Models;
 
 namespace CNHSpotlight
 {
-    [Activity(Label = "CNHSpotlight", MainLauncher = true, Icon = "@drawable/CNHIcon_", ScreenOrientation = ScreenOrientation.Portrait)]
+    [Activity(Label = "CNH Spotlight", MainLauncher = true, Icon = "@drawable/CNHIcon_", ScreenOrientation = ScreenOrientation.Portrait)]
     public class HostActivity : AppCompatActivity
     {
 

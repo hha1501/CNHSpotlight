@@ -81,7 +81,10 @@ namespace CNHSpotlight
 
             }
 
-            bool isOnTop = LayoutManager.FindFirstCompletelyVisibleItemPosition() == 0 || TotalItemCount == 0;
+            bool firstItemOnTop = LayoutManager.FindFirstVisibleItemPosition() == 0 &&
+                                LayoutManager.GetChildAt(0).Top == 0;
+
+            bool isOnTop = firstItemOnTop || TotalItemCount == 0;
 
             Scroll?.Invoke(this, new ScrollEventArgs(isOnTop));
         }
