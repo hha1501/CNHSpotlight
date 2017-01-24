@@ -18,21 +18,7 @@ namespace CNHSpotlight.WordPress.Utils
     {
         public static List<Post> ReplacePosts(this List<Post> source, List<Post> collection)
         {
-            Dictionary<int, Post> sourceDictionary = source.AsEnumerable().Reverse().ToDictionary(post => post.Id);
-
-            foreach (Post newPost in collection.AsEnumerable().Reverse())
-            {
-                if (sourceDictionary.ContainsKey(newPost.Id))
-                {
-                    sourceDictionary[newPost.Id] = newPost;
-                }
-                else
-                {
-                    sourceDictionary.Add(newPost.Id, newPost);
-                }
-            }
-
-            return sourceDictionary.Select(item => item.Value).Reverse().ToList();
+            return source.Union(collection).OrderByDescending(post => post.DateGmt).ToList();
         }
     }
 }
