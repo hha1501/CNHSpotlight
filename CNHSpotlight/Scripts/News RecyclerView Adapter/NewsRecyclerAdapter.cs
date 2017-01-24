@@ -373,7 +373,9 @@ namespace CNHSpotlight.Components
                 .DiskCacheStrategy(DiskCacheStrategy.All)
                 .Placeholder(Resource.Drawable.placeholder)
                 .Error(Resource.Drawable.placeholder_error)
+                .DontTransform()
                 .Into(currentViewHolder.ThumbnailImage);
+            
         } 
         #endregion
 

@@ -4,10 +4,8 @@
     android:minHeight="25px"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:text="@string/cnhspotlight_about"
+    <android.webkit.WebView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/aboutfragment_textview_content"
-        android:layout_alignParentTop="true" />
+        android:layout_height="match_parent"
+        android:id="@+id/aboutfragment_webview_about" />
 </RelativeLayout>

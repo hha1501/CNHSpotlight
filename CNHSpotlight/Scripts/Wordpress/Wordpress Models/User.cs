@@ -33,39 +33,5 @@ namespace CNHSpotlight.WordPress.Models
         public Links Links { get; set; }
     }
 
-    public class AvatarUrls
-    {
-        [JsonProperty("24")]
-        public string Size24 { get; set; }
-
-        [JsonProperty("48")]
-        public string Size48 { get; set; }
-
-        [JsonProperty("96")]
-        public string Size96 { get; set; }
-    }
-
-    public class Links
-    {
-
-        [JsonProperty("self")]
-        public Self[] Self { get; set; }
-
-        [JsonProperty("collection")]
-        public Collection[] Collection { get; set; }
-    }
-
-    public class Self
-    {
-        [JsonProperty("href")]
-        public string Href { get; set; }
-    }
-
-    public class Collection
-    {
-
-        [JsonProperty("href")]
-        public string Href { get; set; }
-    }
 
 }

@@ -43,5 +43,18 @@ namespace CNHSpotlight.Asset
 
             return data;
         }
+
+        public static string CreateAbout(string file)
+        {
+            string path = $"About/{file}";
+
+            string data = string.Empty;
+            using (StreamReader streamReader = new StreamReader(Application.Context.Assets.Open(path)))
+            {
+                data = streamReader.ReadToEnd();
+            }
+
+            return data;
+        }
     }
 }

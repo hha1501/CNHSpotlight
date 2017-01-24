@@ -48,7 +48,7 @@ namespace CNHSpotlight.WordPress
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    
+
                     string postsData = await httpClient.GetStringAsync(postRequest.GetUri());
 
                     List<Post> tempList = JsonConvert.DeserializeObject<List<Post>>(postsData);
@@ -58,7 +58,7 @@ namespace CNHSpotlight.WordPress
                         if (postRequest.SaveRequired)
                         {
                             // successfully retrieve posts, so save them
-                            DataManager.SavePosts(tempList, postRequest.CurrentCategory); 
+                            DataManager.SavePosts(tempList, postRequest.CurrentCategory);
                         }
 
                         return new ModelWrapper<List<Post>>(tempList, TaskResult.Success);
@@ -114,6 +114,41 @@ namespace CNHSpotlight.WordPress
         }
 
 
+        public static async Task<ModelWrapper<Page>> GetAboutPageOnline(PageRequest pageRequest)
+        {
+            // check internet connection
+            if (!ConnectionInfo.InternetConnected())
+            {
+                return new ModelWrapper<Page>(TaskResult.NoInternet);
+            }
+
+            // get users online
+            try
+            {
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    string pageData = await httpClient.GetStringAsync(pageRequest.GetUri());
+
+                    Page page = JsonConvert.DeserializeObject<Page>(pageData);
+
+                    if (page != null)
+                    {
+
+                        return new ModelWrapper<Page>(page, TaskResult.Success);
+                    }
+                    else
+                    {
+                        return new ModelWrapper<Page>(TaskResult.NoData);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return new ModelWrapper<Page>(TaskResult.Error);
+            }
+        }
+
+
         public class PostRequest : ModelRequest
         {
             public PostRequest()
@@ -139,7 +174,7 @@ namespace CNHSpotlight.WordPress
             {
                 if (category != CNHCategory.Latest)
                 {
-                    AddParam("categories", (int)category); 
+                    AddParam("categories", (int)category);
                 }
                 CurrentCategory = category;
                 return this;
@@ -212,6 +247,15 @@ namespace CNHSpotlight.WordPress
             }
         }
 
+        public class PageRequest : ModelRequest
+        {
+            public PageRequest()
+            {
+                BaseUrl = AboutPageUrl;
+            }
+
+        }
+
         /// <summary>
         /// Base class for implementing any model's parameters
         /// </summary>
@@ -219,6 +263,7 @@ namespace CNHSpotlight.WordPress
         {
             public static readonly string PostUrl = "https://chuyennguyenhue.com/wp-json/wp/v2/posts";
             public static readonly string UserUrl = "https://chuyennguyenhue.com/wp-json/wp/v2/users";
+            public static readonly string AboutPageUrl = "https://chuyennguyenhue.com/wp-json/wp/v2/pages/368";
 
             public static readonly int MaxUserCount = 100;
 
@@ -282,4 +327,5 @@ namespace CNHSpotlight.WordPress
         NHInMe = 7,
         NHIcon = 8
     }
+
 }

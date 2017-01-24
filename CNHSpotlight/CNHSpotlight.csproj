@@ -149,8 +149,10 @@
     <Compile Include="Scripts\Wordpress\Wordpress Interface\WordpressExtension.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Models Wrapper\ModelWrapper.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Interface\WordPressManager.cs" />
+    <Compile Include="Scripts\Wordpress\Wordpress Models\Page.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Models\Post.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Models\User.cs" />
+    <Compile Include="Scripts\Wordpress\Wordpress Models\Utils.cs" />
     <Compile Include="Scripts\Wordpress\Wordpress Utils\WordpressUtils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -247,9 +249,6 @@
     <AndroidResource Include="Resources\drawable\ic_help_outline_white_24dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\values\info.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\values\colors.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
@@ -291,7 +290,12 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_search_white_24dp.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\info.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\About\about.html" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.24.2.1\build\Xamarin.Android.Support.Vector.Drawable.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

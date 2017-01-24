@@ -71,10 +71,16 @@ namespace CNHSpotlight
             AboutFragment aboutFragment = new AboutFragment();
 
             FragmentTransaction transaction = SupportFragmentManager.BeginTransaction();
+
+            if (SupportFragmentManager.FindFragmentByTag("member_fragment") == null)
+            {
+                transaction.AddToBackStack("member_fragment");
+            }
+
             transaction
-                .Replace(Resource.Id.aboutactivity_fragment_container, new MembersFragment())
-                .AddToBackStack("member fragment")
-                .Commit();
+                .Replace(Resource.Id.aboutactivity_fragment_container, new MembersFragment());
+
+            transaction.Commit();
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -93,9 +99,26 @@ namespace CNHSpotlight
                 case Resource.Id.about_menu_item_members:
                     ShowMember();
                     return true;
+                case Android.Resource.Id.Home:
+                    OnBackPressed();
+                    return true;
                 default:
                     return base.OnOptionsItemSelected(item);
             }
         }
+
+
+        public override void OnBackPressed()
+        {
+            if (SupportFragmentManager.BackStackEntryCount > 0)
+            {
+                SupportFragmentManager.PopBackStack();
+            }
+            else
+            {
+                base.OnBackPressed();
+            }
+        }
+
     }
 }

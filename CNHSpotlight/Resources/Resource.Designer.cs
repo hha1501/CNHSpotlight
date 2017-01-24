@@ -2156,7 +2156,7 @@ namespace CNHSpotlight
 			public const int aboutactivity_toolbar = 2131099757;
 			
 			// aapt resource value: 0x7f06006f
-			public const int aboutfragment_textview_content = 2131099759;
+			public const int aboutfragment_webview_about = 2131099759;
 			
 			// aapt resource value: 0x7f060081
 			public const int action0 = 2131099777;

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,11 @@ using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
+using Android.Webkit;
+using Android.Support.Design.Widget;
+
+using CNHSpotlight.WordPress;
+using CNHSpotlight.Asset;
 
 namespace CNHSpotlight
 {
@@ -19,7 +25,7 @@ namespace CNHSpotlight
         // UIs
         RelativeLayout rootView;
 
-        TextView textviewAbout;
+        WebView webViewAbout;
 
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -33,9 +39,22 @@ namespace CNHSpotlight
         {
             rootView = (RelativeLayout)inflater.Inflate(Resource.Layout.AboutFragment, container, false);
 
-            textviewAbout = rootView.FindViewById<TextView>(Resource.Id.aboutfragment_textview_content);
+            webViewAbout = rootView.FindViewById<WebView>(Resource.Id.aboutfragment_webview_about);
 
             return rootView;
+        }
+
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            LoadAbout();
+        }
+
+        private void LoadAbout()
+        {
+            string html = AssetUtils.CreateAbout("about");
+            webViewAbout.LoadDataWithBaseURL(null, html, "text/html", "utf-8", null);
         }
     }
 }
