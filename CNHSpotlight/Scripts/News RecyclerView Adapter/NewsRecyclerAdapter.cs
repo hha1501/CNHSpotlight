@@ -370,10 +370,10 @@ namespace CNHSpotlight.Components
 
             Glide.With(context)
                 .Load(currentPost.Embedded.WpFeaturedMedia.FirstOrDefault().SourceUrl)
+                .CenterCrop()
                 .DiskCacheStrategy(DiskCacheStrategy.All)
                 .Placeholder(Resource.Drawable.placeholder)
                 .Error(Resource.Drawable.placeholder_error)
-                .DontTransform()
                 .Into(currentViewHolder.ThumbnailImage);
             
         } 

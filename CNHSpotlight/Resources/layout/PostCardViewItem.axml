@@ -9,21 +9,22 @@
     android:elevation="3dp"
     auto:cardCornerRadius="3dp"
     android:id="@+id/postcardviewitem_cardview_root"
-    auto:cardBackgroundColor="@color/cardview_post_background">
+    auto:cardBackgroundColor="@color/cardview_post_background"
+    tools:gridSpec="1|4|#0093eeff|K:#ee8700ff:16,l:72,l:16,r|S:#83ee00ff:16,0,l:16,56,l:16,0,r">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="200dp"
             android:id="@+id/postcardviewitem_imageview_thumbnailimage"
             tools:src="@android:drawable/ic_menu_gallery"
             android:adjustViewBounds="true"
             android:layout_alignParentTop="true"
             android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/placeholder" />
         <TextView
             android:text="Title"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -34,7 +35,7 @@
             android:textColor="@color/cardview_post_title"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
-            android:paddingTop="10dp"
+            android:paddingTop="5dp"
             android:paddingBottom="5dp" />
         <TextView
             android:text="Author"

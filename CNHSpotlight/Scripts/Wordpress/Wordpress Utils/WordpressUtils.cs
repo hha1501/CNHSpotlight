@@ -18,7 +18,21 @@ namespace CNHSpotlight.WordPress.Utils
     {
         public static List<Post> ReplacePosts(this List<Post> source, List<Post> collection)
         {
-            return source.Union(collection).OrderByDescending(post => post.DateGmt).ToList();
+            return source.Union(collection, new PostComparer()).OrderByDescending(post => post.DateGmt).ToList();
+        }
+
+        private class PostComparer : IEqualityComparer<Post>
+        {
+            public bool Equals(Post x, Post y)
+            {
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode(Post obj)
+            {
+                return obj.Id;
+            }
         }
     }
+
 }

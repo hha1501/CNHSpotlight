@@ -42,12 +42,14 @@ namespace CNHSpotlight
 
             // recycler view & setup
             recyclerView = swipeRefreshLayout.FindViewById<RecyclerView>(Resource.Id.newsfragment_recyclerview);
+            recyclerView.HasFixedSize = true;
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Activity);
             recyclerView.SetLayoutManager(linearLayoutManager);
 
             // prepare adapter (an empty one)
             currentAdapter = new NewsRecyclerAdapter(Activity);
-            currentAdapter.ItemClick += (o, e) => NewsClick(e.ItemPosition);
+            currentAdapter.ItemClick += (o, e) => OnNewsClick(e.ItemPosition);
             currentAdapter.Error += OnError;
             currentAdapter.ConnectionError += OnConnectionError;
             currentAdapter.NoData += OnNoData;
@@ -130,7 +132,7 @@ namespace CNHSpotlight
             }
         }
 
-        private void NewsClick(int position)
+        private void OnNewsClick(int position)
         {
             if (!currentAdapter.IsLoading)
             {
