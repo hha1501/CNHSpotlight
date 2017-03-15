@@ -53,7 +53,7 @@ namespace CNHSpotlight
 
         private void LoadAbout()
         {
-            string html = AssetUtils.CreateAbout("about.html");
+            string html = AssetUtils.CreateAbout("about");
             webViewAbout.LoadDataWithBaseURL(null, html, "text/html", "utf-8", null);
         }
     }
