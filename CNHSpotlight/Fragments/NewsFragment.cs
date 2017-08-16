@@ -25,7 +25,7 @@ namespace CNHSpotlight
         // Endless scrolling listener
         RecyclerViewEndlessScrollListener endlessScrollListener;
 
-        // current RecyclerViewAdapter
+        // Current RecyclerViewAdapter
         NewsRecyclerAdapter currentAdapter;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -37,17 +37,17 @@ namespace CNHSpotlight
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            // swipe refresh layout
+            // Swipe refresh layout.
             swipeRefreshLayout = (SwipeRefreshLayout)inflater.Inflate(Resource.Layout.NewsFragment, container, false);
 
-            // recycler view & setup
+            // Recycler view & setup.
             recyclerView = swipeRefreshLayout.FindViewById<RecyclerView>(Resource.Id.newsfragment_recyclerview);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Activity);
             recyclerView.SetLayoutManager(linearLayoutManager);
 
-            // prepare adapter (an empty one)
+            // Prepare adapter (an empty one).
             currentAdapter = new NewsRecyclerAdapter(Activity);
-            currentAdapter.ItemClick += (o, e) => NewsClick(e.ItemPosition);
+            currentAdapter.ItemClick += (o, e) => OnNewsClick(e.ItemPosition);
             currentAdapter.Error += OnError;
             currentAdapter.ConnectionError += OnConnectionError;
             currentAdapter.NoData += OnNoData;
@@ -57,7 +57,7 @@ namespace CNHSpotlight
 
             recyclerView.SetAdapter(currentAdapter);
 
-            // apply scroll listener to recyclerview
+            // Apply scroll listener to recyclerview.
             endlessScrollListener = new RecyclerViewEndlessScrollListener(linearLayoutManager, currentAdapter);
             endlessScrollListener.ThresholdReached += async (o, e) => await currentAdapter.LoadMore();
             endlessScrollListener.Scroll += HandleScroll;
@@ -130,12 +130,12 @@ namespace CNHSpotlight
             }
         }
 
-        private void NewsClick(int position)
+        private void OnNewsClick(int position)
         {
             if (!currentAdapter.IsLoading)
             {
 
-                // get post
+                // Get post.
                 Post post = currentAdapter.GetPost(position);
 
                 if (post == null)
@@ -143,7 +143,7 @@ namespace CNHSpotlight
                     return;
                 }
                 
-                // start readnewsFragment
+                // Start readnewsFragment.
                 HostActivity hostActivity = (HostActivity)Activity;
 
                 hostActivity.ReadNews(post); 

@@ -21,7 +21,7 @@ namespace CNHSpotlight.Components
     public class NewsRecyclerAdapter : RecyclerView.Adapter
     {
 
-        // properties and fields
+        // Properties and fields.
         Context context;
 
         public List<Post> PostList { get; private set; }
@@ -32,14 +32,14 @@ namespace CNHSpotlight.Components
 
         public bool CanLoadMore { get; private set; }
 
-        // data properties
+        // Data properties.
         public CNHCategory Category { get; private set; }
 
         public string SearchKeyword { get; private set; }
 
         public bool IsSearchOn { get; private set; }
 
-        // events
+        // Events.
         public event EventHandler<ItemClickEventArgs> ItemClick;
 
         public event EventHandler Loading;
@@ -49,7 +49,7 @@ namespace CNHSpotlight.Components
         public event EventHandler ConnectionError;
         public event EventHandler NoData;
 
-        // events wrapper methods
+        // Events wrapper methods.
         protected void OnLoading()
         {
             Loading?.Invoke(this, EventArgs.Empty);
@@ -71,7 +71,7 @@ namespace CNHSpotlight.Components
             NoData?.Invoke(this, EventArgs.Empty);
         }
 
-        // constructor
+        // Constructor.
         public NewsRecyclerAdapter(Context context)
         {
             this.context = context;
@@ -275,7 +275,7 @@ namespace CNHSpotlight.Components
         /// <param name="state"></param>
         void SetLoadingAnimation(bool state)
         {
-            // turn on
+            // Turn on.
             if (state && !IsLoadingMore)
             {
                 PostList.Add(new DummyLoadingPost());
@@ -369,7 +369,7 @@ namespace CNHSpotlight.Components
 
             Glide.With(context)
                 .Load(currentPost.Embedded.WpFeaturedMedia.FirstOrDefault().SourceUrl)
-                .DontTransform()
+                .CenterCrop()
                 .DiskCacheStrategy(DiskCacheStrategy.All)
                 .Placeholder(Resource.Drawable.placeholder)
                 .Error(Resource.Drawable.placeholder_error)

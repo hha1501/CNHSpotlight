@@ -1842,6 +1842,9 @@ namespace CNHSpotlight
 			// aapt resource value: 0x7f06005c
 			public const int hint_pressed_alpha_material_light = 2131099740;
 			
+			// aapt resource value: 0x7f06008e
+			public const int imageview_thumbnail_height = 2131099790;
+			
 			// aapt resource value: 0x7f060000
 			public const int item_touch_helper_max_drag_scroll_per_frame = 2131099648;
 			
