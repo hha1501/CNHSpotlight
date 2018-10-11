@@ -11,6 +11,7 @@ using Android.Support.V7.Widget;
 
 using Com.Bumptech.Glide;
 using Com.Bumptech.Glide.Load.Engine;
+using Com.Bumptech.Glide.Request;
 
 using CNHSpotlight.WordPress.Models;
 using CNHSpotlight.WordPress;
@@ -49,6 +50,9 @@ namespace CNHSpotlight.Components
         public event EventHandler ConnectionError;
         public event EventHandler NoData;
 
+        // Glide options.
+        private RequestOptions glideOptions;
+
         // Events wrapper methods.
         protected void OnLoading()
         {
@@ -77,12 +81,15 @@ namespace CNHSpotlight.Components
             this.context = context;
 
             PostList = new List<Post>();
-
             Category = CNHCategory.Latest;
-
             SearchKeyword = "";
-
             CanLoadMore = true;
+
+            glideOptions = new RequestOptions()
+                                .CenterCrop()
+                                .InvokeDiskCacheStrategy(DiskCacheStrategy.All)
+                                .Placeholder(Resource.Drawable.placeholder)
+                                .Error(Resource.Drawable.placeholder_error);
         }
 
         public async Task FetchNews(CNHCategory category)
@@ -366,13 +373,10 @@ namespace CNHSpotlight.Components
             MediaAuthor author = currentPost.Embedded.Author.FirstOrDefault();
 
             currentViewHolder.Author.Text = author != null ? author.Name : "Unknown";
-
+            
             Glide.With(context)
                 .Load(currentPost.Embedded.WpFeaturedMedia.FirstOrDefault().SourceUrl)
-                .CenterCrop()
-                .DiskCacheStrategy(DiskCacheStrategy.All)
-                .Placeholder(Resource.Drawable.placeholder)
-                .Error(Resource.Drawable.placeholder_error)
+                .Apply(glideOptions)
                 .Into(currentViewHolder.ThumbnailImage);
         } 
         #endregion
